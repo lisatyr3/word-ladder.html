@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Word Ladder</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#1a1a1a;
+      --muted:#666;
+      --accent:#2a7b6f;
+      --soft:#f3f5f7;
+      --danger:#b00020;
+      --ok:#0b6b2b;
+      --border:#d8dde3;
+    }
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display:flex;
+      justify-content:center;
+      padding: 18px;
+    }
+    .wrap{
+      width: min(760px, 100%);
+    }
+    h1{
+      margin: 6px 0 10px;
+      font-size: 30px;
+      letter-spacing: .2px;
+    }
+    .sub{
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .card{
+      background: var(--soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content: space-between;
+    }
+    .pill{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 15px;
+      white-space: nowrap;
+    }
+    .pill strong{ color: var(--accent); }
+    .goal{
+      font-size: 16px;
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .ladder{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    ol{
+      margin: 0;
+      padding-left: 22px;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+      align-items: center;
+    }
+    input[type="text"]{
+      font-size: 18px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      width: 180px;
+      max-width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    button{
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 16px;
+      cursor: pointer;
+      background: var(--accent);
+      color:#fff;
+    }
+    button.secondary{
+      background:#fff;
+      color: var(--text);
+      border:1px solid var(--border);
+    }
+    button.danger{
+      background: var(--danger);
+    }
+    .msg{
+      margin-top: 10px;
+      font-size: 16px;
+      line-height:1.35;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background:#fff;
+    }
+    .msg.ok{ border-color: rgba(11,107,43,.35); }
+    .msg.err{ border-color: rgba(176,0,32,.35); }
+    .msg strong{ color: var(--accent); }
+    .tiny{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .footerBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    a{
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover{ text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Daily Word Ladder</h1>
+  <p class="sub">
+    Change <strong>one letter at a time</strong> to turn the start word into the end word.
+    Every step must be a real word.
+  </p>
+
+  <div class="card">
+    <div class="row">
+      <div class="pill">Puzzle: <strong id="puzzleId">—</strong></div>
+      <div class="pill">Date: <strong id="todayStr">—</strong></div>
+      <div class="pill">Goal: <strong id="targetMoves">—</strong> moves</div>
+    </div>
+
+    <div class="goal">
+      Start: <strong id="startWord">—</strong> &nbsp;→&nbsp; End: <strong id="endWord">—</strong><br/>
+      Tip: Keep the same word length. Only change one letter each step.
+    </div>
+
+    <div class="ladder">
+      <ol id="pathList"></ol>
+
+      <div class="controls">
+        <label for="nextWord" class="sr-only" style="position:absolute;left:-9999px;">Next word</label>
+        <input id="nextWord" type="text" maxlength="6" inputmode="text" placeholder="NEXT WORD" autocomplete="off" />
+        <button id="addBtn">Add Word</button>
+        <button id="undoBtn" class="secondary">Undo</button>
+        <button id="resetBtn" class="danger">Reset</button>
+      </div>
+
+      <div id="message" class="msg" style="display:none;"></div>
+
+      <div class="footerBtns">
+        <button id="hintBtn" class="secondary">Hint</button>
+        <button id="newBtn" class="secondary" title="Loads a random puzzle (does not change the daily one)">Random Puzzle</button>
+        <button id="shareBtn" class="secondary" style="display:none;">Copy Results</button>
+      </div>
+
+      <div class="tiny">
+        Progress saves automatically for today’s puzzle on this device.
+      </div>
+    </div>
+  </div>
+
+  <div class="tiny">
+    Want this embedded on your site? Use an iframe pointed at this GitHub Pages URL.
+  </div>
+</div>
+
+<script>
+/* =========================
+   DAILY WORD LADDER (4-Letter)
+   - Rotates daily
+   - LocalStorage save per day
+   - Validates: same length, one letter change, in dictionary
+   ========================= */
+
+const PUZZLES = [
+  { start:"COLD", end:"WARM", target:4, hint:"Try changing one letter toward the goal sound/meaning." },
+  { start:"FALL", end:"RISE", target:4, hint:"Think about swapping the first letter, then the vowel." },
+  { start:"PARK", end:"WALK", target:2, hint:"One letter makes it active." },
+  { start:"SAND", end:"SNOW", target:4, hint:"Try moving toward winter." },
+  { start:"LOVE", end:"LIFE", target:2, hint:"Swap one letter near the end." },
+  { start:"MOON", end:"STAR", target:4, hint:"Try aiming for ST-- early." },
+  { start:"PAIN", end:"GAIN", target:1, hint:"Just one letter." },
+  { start:"MIND", end:"BODY", target:4, hint:"Try getting to B--- first." },
+  { start:"SHIP", end:"BOAT", target:4, hint:"Try changing the first letter, then vowel." },
+  { start:"READ", end:"BOOK", target:4, hint:"Try reaching B--- with a one-letter hop." },
+  { start:"COAT", end:"COLD", target:2, hint:"This one is quick." },
+  { start:"SAFE", end:"SURE", target:2, hint:"Change the last letter, then the third." },
+  { start:"HATE", end:"LOVE", target:3, hint:"Try stepping through a calmer middle word." },
+  { start:"WINE", end:"DINE", target:1, hint:"One letter." },
+  { start:"MILE", end:"KILO", target:4, hint:"Try going MI-- to KI--." },
+  { start:"SOUP", end:"SALT", target:4, hint:"Try moving to SA--." },
+  { start:"EASY", end:"HARD", target:4, hint:"Try getting to H--- early." },
+  { start:"GOLD", end:"SILK", target:4, hint:"Try heading toward SI--." },
+  { start:"HOME", end:"AWAY", target:4, hint:"Try changing the first letter." },
+  { start:"SING", end:"SONG", target:2, hint:"Swap one letter, then another." },
+  { start:"TIME", end:"TIDE", target:1, hint:"One letter." },
+  { start:"RING", end:"KING", target:1, hint:"One letter." },
+  { start:"LAMP", end:"DARK", target:4, hint:"Try reaching D--- early." },
+  { start:"ROAD", end:"PATH", target:4, hint:"Try RO-- to PA--." },
+  { start:"FAST", end:"SLOW", target:4, hint:"Try aiming for SL--." },
+  { start:"TOWN", end:"CITY", target:4, hint:"Try heading toward CI--." },
+  { start:"BIRD", end:"FISH", target:4, hint:"Try getting to F--- early." },
+  { start:"MILK", end:"MEAL", target:3, hint:"Try changing one letter at a time toward M-E-A-L." },
+  { start:"RAIN", end:"WIND", target:4, hint:"Try moving toward WI--." },
+  { start:"FIRE", end:"WATER", target:4, hint:"(This one is 4 letters only in steps; end word is 5 - we will auto-skip)"} // will be filtered
+].filter(p => p.start.length === p.end.length); // keep same-length puzzles
+
+// A modest 4-letter word list (dictionary) for validation.
+// (This does NOT need to be perfect; it’s just to prevent gibberish.)
+const WORDS_4 = [
+  "ABLE","ACID","AGED","ALSO","AREA","ARMY","AWAY","BABY","BACK","BALL","BAND","BANK","BASE","BATH","BEAR","BEAT","BEEF","BELL","BEND","BEST",
+  "BILL","BIRD","BLOW","BLUE","BOAT","BODY","BOLD","BOND","BONE","BOOK","BORN","BOTH","BOWL","BULK","BURN","BUSH","BUSY","CALL","CALM","CAMP",
+  "CARD","CARE","CASE","CASH","CAST","CELL","CHAT","CHIP","CITY","CLUB","COAL","COAT","COLD","COME","COOK","COOL","CORD","CORE","CORN","COST",
+  "CREW","CROP","DARK","DATA","DATE","DAWN","DEAL","DEAR","DEBT","DEEP","DESK","DINE","DISH","DONE","DOOR","DOWN","DRAW","DROP","DRUG","EACH",
+  "EARN","EASE","EASY","EDGE","ELSE","EVEN","EVER","FACE","FACT","FAIL","FAIR","FALL","FARM","FAST","FATE","FEAR","FEED","FEEL","FILE","FILL",
+  "FILM","FIND","FINE","FIRE","FISH","FIVE","FLAG","FLOW","FOOD","FOOT","FORK","FORM","FREE","FROG","FULL","GAIN","GAME","GATE","GIRL","GIVE",
+  "GLAD","GOAL","GOLD","GOLF","GOOD","GRAY","GROW","HALF","HALL","HAND","HARD","HATE","HAVE","HEAD","HEAR","HEAT","HELP","HERO","HIDE","HIGH",
+  "HILL","HOME","HOOK","HOPE","HOUR","HUGE","HUNT","IDEA","JOIN","JUMP","JUST","KEEP","KIND","KING","KISS","KNEE","KNOW","LADY","LAKE","LAMP",
+  "LAND","LAST","LATE","LEAD","LEAF","LEFT","LIFE","LIKE","LINE","LIST","LIVE","LOAD","LOAN","LOCK","LONG","LOOK","LOST","LOVE","LUCK","MADE",
+  "MAIL","MAIN","MAKE","MEAL","MEAN","MEET","MENU","MILE","MILK","MIND","MISS","MOON","MORE","MOST","MOVE","NAME","NAVY","NEAR","NEED","NEXT",
+  "NICE","NINE","NOTE","NOWS","ODDS","OPEN","OVER","PACK","PAGE","PAIN","PAIR","PARK","PART","PATH","PICK","PINK","PIPE","PLAN","PLAY","PLOT",
+  "PLUS","POLL","POOL","POOR","PORT","POST","PULL","PURE","RACE","RAIN","RANK","READ","REAL","REST","RICH","RING","RISE","RISK","ROAD","ROCK",
+  "ROLE","ROOM","ROOT","RUSH","SAFE","SAID","SALT","SAND","SAVE","SEAT","SEED","SEEK","SEEM","SELF","SELL","SEND","SHIP","SHOT","SHOW","SICK",
+  "SIDE","SING","SITE","SIZE","SKIN","SLOW","SNOW","SOFT","SOIL","SOME","SONG","SOON","SOUP","STAR","STAY","STEP","STOP","SUCH","SURE","TAKE",
+  "TALK","TANK","TEAM","TELL","TEND","TERM","TEST","THAN","THAT","THEN","THEY","THIS","TIDE","TIME","TOLD","TONE","TOWN","TREE","TRIP","TRUE",
+  "TURN","TYPE","UNIT","UPON","USED","USER","VARY","VAST","VIEW","WAGE","WALK","WALL","WARM","WASH","WAVE","WAYS","WEEK","WELL","WEST","WHAT",
+  "WHEN","WIDE","WIFE","WILD","WIND","WINE","WISH","WITH","WORD","WORK","YARD","YEAH","YEAR"
+];
+
+const DICT = new Set(WORDS_4);
+
+const els = {
+  puzzleId: document.getElementById("puzzleId"),
+  todayStr: document.getElementById("todayStr"),
+  targetMoves: document.getElementById("targetMoves"),
+  startWord: document.getElementById("startWord"),
+  endWord: document.getElementById("endWord"),
+  pathList: document.getElementById("pathList"),
+  nextWord: document.getElementById("nextWord"),
+  addBtn: document.getElementById("addBtn"),
+  undoBtn: document.getElementById("undoBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  hintBtn: document.getElementById("hintBtn"),
+  newBtn: document.getElementById("newBtn"),
+  shareBtn: document.getElementById("shareBtn"),
+  message: document.getElementById("message"),
+};
+
+function showMsg(text, type){
+  els.message.style.display = "block";
+  els.message.className = "msg " + (type === "ok" ? "ok" : "err");
+  els.message.innerHTML = text;
+}
+
+function clearMsg(){
+  els.message.style.display = "none";
+  els.message.innerHTML = "";
+}
+
+function formatTodayLocal(){
+  // Use the viewer’s local date (works well for daily rotation)
+  const d = new Date();
+  const fmt = new Intl.DateTimeFormat(undefined, { year:"numeric", month:"long", day:"numeric" });
+  return fmt.format(d);
+}
+
+function dayKey(){
+  // YYYY-MM-DD in local time
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const da = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${da}`;
+}
+
+function dailyIndex(mod){
+  // Days since epoch (local) modulo puzzle count
+  const d = new Date();
+  const localMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.floor(localMidnight.getTime() / 86400000);
+  return ((days % mod) + mod) % mod;
+}
+
+function isOneLetterDiff(a,b){
+  if(a.length !== b.length) return false;
+  let diff = 0;
+  for(let i=0;i<a.length;i++){
+    if(a[i] !== b[i]) diff++;
+    if(diff > 1) return false;
+  }
+  return diff === 1;
+}
+
+function cleanWord(s){
+  return (s || "").toUpperCase().replace(/[^A-Z]/g,"");
+}
+
+let currentPuzzle = null;
+let currentPath = [];
+
+function storageKey(puzId){
+  return `wordladder_${puzId}_${dayKey()}`;
+}
+
+function render(){
+  els.pathList.innerHTML = "";
+  currentPath.forEach(w => {
+    const li = document.createElement("li");
+    li.textContent = w;
+    els.pathList.appendChild(li);
+  });
+
+  // show share button if solved
+  const solved = currentPath[currentPath.length-1] === currentPuzzle.end;
+  els.shareBtn.style.display = solved ? "inline-block" : "none";
+}
+
+function save(){
+  try{
+    localStorage.setItem(storageKey(currentPuzzle.id), JSON.stringify(currentPath));
+  }catch(e){}
+}
+
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem(storageKey(currentPuzzle.id));
+    if(!raw) return null;
+    const arr = JSON.parse(raw);
+    if(Array.isArray(arr) && arr.length){
+      return arr.map(cleanWord).filter(Boolean);
+    }
+  }catch(e){}
+  return null;
+}
+
+function setPuzzle(p, forcedId=null){
+  currentPuzzle = {
+    ...p,
+    id: forcedId || `${p.start}-${p.end}`
+  };
+
+  els.todayStr.textContent = formatTodayLocal();
+  els.puzzleId.textContent = currentPuzzle.id;
+  els.startWord.textContent = currentPuzzle.start;
+  els.endWord.textContent = currentPuzzle.end;
+  els.targetMoves.textContent = String(currentPuzzle.target);
+
+  // load saved path or start fresh
+  const saved = loadSaved();
+  if(saved && saved[0] === currentPuzzle.start){
+    currentPath = saved;
+  }else{
+    currentPath = [currentPuzzle.start];
+    save();
+  }
+
+  els.nextWord.value = "";
+  clearMsg();
+  render();
+}
+
+function validateAndAdd(word){
+  const w = cleanWord(word);
+
+  if(!w){
+    showMsg("Type a word first.", "err");
+    return;
+  }
+  if(w.length !== currentPuzzle.start.length){
+    showMsg(`Your word must be <strong>${currentPuzzle.start.length}</strong> letters long.`, "err");
+    return;
+  }
+  if(!DICT.has(w)){
+    showMsg(`“<strong>${w}</strong>” isn’t in this puzzle’s dictionary. Try another common word.`, "err");
+    return;
+  }
+
+  const last = currentPath[currentPath.length-1];
+  if(w === last){
+    showMsg("That’s the same word as your last step. Try a different one.", "err");
+    return;
+  }
+  if(!isOneLetterDiff(last, w)){
+    showMsg(`You can only change <strong>one letter</strong> at a time. Try a word that is 1 letter different from <strong>${last}</strong>.`, "err");
+    return;
+  }
+
+  currentPath.push(w);
+  save();
+  render();
+
+  if(w === currentPuzzle.end){
+    const moves = currentPath.length - 1;
+    const target = currentPuzzle.target;
+    const msg = (moves <= target)
+      ? `You did it! 🎉 You finished in <strong>${moves}</strong> moves (goal: ${target}).`
+      : `You finished! 🎉 You did it in <strong>${moves}</strong> moves (goal: ${target}). Want to try again and beat your score?`;
+    showMsg(msg, "ok");
+  }else{
+    clearMsg();
+  }
+}
+
+function undo(){
+  if(currentPath.length <= 1){
+    showMsg("You’re already at the start word.", "err");
+    return;
+  }
+  currentPath.pop();
+  save();
+  render();
+  clearMsg();
+}
+
+function reset(){
+  if(!confirm("Reset today’s puzzle and start over?")) return;
+  currentPath = [currentPuzzle.start];
+  save();
+  render();
+  clearMsg();
+}
+
+function hint(){
+  showMsg(currentPuzzle.hint ? currentPuzzle.hint : "Try changing one letter toward the end word.", "ok");
+}
+
+function randomPuzzle(){
+  const idx = Math.floor(Math.random() * PUZZLES.length);
+  const p = PUZZLES[idx];
+  setPuzzle(p, `RANDOM-${p.start}-${p.end}`);
+  showMsg("Loaded a random puzzle. (Your daily puzzle is still there when you reload the page.)", "ok");
+}
+
+function copyResults(){
+  const moves = currentPath.length - 1;
+  const lines = [
+    `Daily Word Ladder (${dayKey()})`,
+    `${currentPuzzle.start} → ${currentPuzzle.end}`,
+    `Moves: ${moves} (Goal: ${currentPuzzle.target})`,
+    `Path: ${currentPath.join(" → ")}`
+  ];
+  const text = lines.join("\n");
+
+  navigator.clipboard.writeText(text).then(() => {
+    showMsg("Copied results to your clipboard. Paste it anywhere you like!", "ok");
+  }).catch(() => {
+    showMsg("Couldn’t auto-copy on this browser. You can manually select and copy your path above.", "err");
+  });
+}
+
+// Wire up UI
+els.addBtn.addEventListener("click", () => validateAndAdd(els.nextWord.value));
+els.nextWord.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){
+    e.preventDefault();
+    validateAndAdd(els.nextWord.value);
+  }
+});
+els.undoBtn.addEventListener("click", undo);
+els.resetBtn.addEventListener("click", reset);
+els.hintBtn.addEventListener("click", hint);
+els.newBtn.addEventListener("click", randomPuzzle);
+els.shareBtn.addEventListener("click", copyResults);
+
+// Load daily puzzle
+(function init(){
+  const idx = dailyIndex(PUZZLES.length);
+  const p = PUZZLES[idx];
+  setPuzzle(p, `DAILY-${dayKey()}-${p.start}-${p.end}`);
+})();
+</script>
+</body>
+</html>
