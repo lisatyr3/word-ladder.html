@@ -17,7 +17,7 @@ padding:20px;
 .container{
 background:white;
 padding:25px;
-max-width:800px;
+max-width:820px;
 width:100%;
 border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,.08);
@@ -27,6 +27,12 @@ h1{
 text-align:center;
 margin-top:0;
 color:#2a7b6f;
+}
+
+.goal{
+text-align:center;
+font-size:26px;
+margin-bottom:10px;
 }
 
 .instructions{
@@ -115,8 +121,12 @@ font-weight:bold;
 
 <h1>Word Ladder Challenge</h1>
 
+<div class="goal">
+MAIN → MEAL
+</div>
+
 <div class="instructions">
-Change <b>one letter</b> at a time using the clues.
+Fill in the missing words. Each step must change <b>one letter</b>.
 </div>
 
 <div class="game">
@@ -143,8 +153,7 @@ clues:[
 "Shopping center",
 "Entryway",
 "Underworld",
-"Cure",
-"Food"
+"Cure"
 ]
 }
 
@@ -175,7 +184,11 @@ ladderHTML+=`<div class="rung">----</div>`
 
 }
 
+if(i>0 && i<puzzle.words.length){
+
 clueHTML+=`<div class="clue">${puzzle.clues[i]}</div>`
+
+}
 
 })
 
@@ -187,13 +200,10 @@ document.getElementById("clues").innerHTML=clueHTML
 function addLetter(letter){
 
 let input=document.getElementById("guess")
-
 if(!input) return
 
 if(input.value.length<4){
-
 input.value+=letter
-
 }
 
 }
@@ -201,7 +211,6 @@ input.value+=letter
 function deleteLetter(){
 
 let input=document.getElementById("guess")
-
 if(!input) return
 
 input.value=input.value.slice(0,-1)
@@ -211,7 +220,6 @@ input.value=input.value.slice(0,-1)
 function submitWord(){
 
 let input=document.getElementById("guess")
-
 if(!input) return
 
 let word=input.value.toUpperCase()
@@ -219,18 +227,19 @@ let word=input.value.toUpperCase()
 if(word===puzzle.words[current]){
 
 current++
+document.getElementById("message").innerText=""
 
 draw()
 
 if(current===puzzle.words.length-1){
 
-document.getElementById("message").innerText="Great job! You solved it 🎉"
+document.getElementById("message").innerText="Puzzle solved 🎉"
 
 }
 
 }else{
 
-document.getElementById("message").innerText="Try again"
+document.getElementById("message").innerText="Not quite. Try again."
 
 }
 
@@ -243,9 +252,7 @@ const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let html=""
 
 for(let l of letters){
-
 html+=`<div class="key" onclick="addLetter('${l}')">${l}</div>`
-
 }
 
 html+=`<div class="key" onclick="deleteLetter()">⌫</div>`
