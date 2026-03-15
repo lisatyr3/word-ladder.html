@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Today's Word Ladder</title>
+<title>Word Ladder Challenge</title>
 
 <style>
 
 body{
-font-family: Arial, Helvetica, sans-serif;
-background:#f5f7f6;
-margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#f5f6f7;
 padding:20px;
 display:flex;
 justify-content:center;
@@ -18,11 +16,11 @@ justify-content:center;
 
 .container{
 background:white;
-max-width:650px;
-width:100%;
 padding:25px;
+max-width:750px;
+width:100%;
 border-radius:12px;
-box-shadow:0 3px 12px rgba(0,0,0,.08);
+box-shadow:0 3px 10px rgba(0,0,0,.08);
 }
 
 h1{
@@ -33,69 +31,73 @@ color:#2a7b6f;
 
 .instructions{
 text-align:center;
-color:#555;
+color:#666;
 margin-bottom:20px;
 }
 
-.gamebox{
-background:#f8f8f8;
-padding:20px;
-border-radius:10px;
+.game{
+display:flex;
+gap:40px;
 }
 
-.words{
-font-size:26px;
-text-align:center;
-margin-bottom:10px;
+.ladder{
+border-left:6px solid #666;
+border-right:6px solid #666;
+padding:10px 0;
 }
 
-.steps{
+.rung{
+border-top:6px solid #666;
+padding:14px 30px;
+font-size:24px;
 text-align:center;
-font-size:20px;
-letter-spacing:2px;
-margin-bottom:20px;
+}
+
+.active{
+background:#e8f3f1;
+font-weight:bold;
+}
+
+.clues{
+flex:1;
+}
+
+.clue{
+padding:14px 0;
+border-bottom:1px solid #eee;
 }
 
 input{
-font-size:20px;
-padding:10px;
-width:150px;
+font-size:22px;
 text-align:center;
-border-radius:8px;
+width:120px;
+padding:8px;
+border-radius:6px;
 border:1px solid #ccc;
 }
 
-button{
-font-size:16px;
-padding:10px 16px;
-margin-left:10px;
-border-radius:8px;
-border:none;
-background:#2a7b6f;
-color:white;
+.keyboard{
+margin-top:20px;
+text-align:center;
+}
+
+.key{
+display:inline-block;
+padding:10px 14px;
+margin:4px;
+background:#ddd;
+border-radius:6px;
 cursor:pointer;
 }
 
-button:hover{
-background:#23665b;
-}
-
-.buttons{
-text-align:center;
-margin-top:15px;
+.key:hover{
+background:#ccc;
 }
 
 .message{
 text-align:center;
 margin-top:15px;
-font-size:18px;
 font-weight:bold;
-}
-
-.hint{
-margin-top:10px;
-text-align:center;
-color:#666;
 }
 
 </style>
@@ -105,164 +107,149 @@ color:#666;
 
 <div class="container">
 
-<h1>Today's Word Ladder</h1>
+<h1>Word Ladder Challenge</h1>
 
 <div class="instructions">
-Change one letter at a time to turn the first word into the last word.
+Change <b>one letter</b> at a time using the clues.
 </div>
 
-<div class="gamebox">
+<div class="game">
 
-<div class="words">
-<strong id="start"></strong>
-→
-<strong id="end"></strong>
-</div>
+<div class="ladder" id="ladder"></div>
 
-<div class="steps" id="ladder"></div>
-
-<div style="text-align:center">
-
-<input id="guess" maxlength="4" placeholder="WORD">
-
-<button onclick="addWord()">Add</button>
+<div class="clues" id="clues"></div>
 
 </div>
 
-<div class="buttons">
-
-<button onclick="showHint()">Hint</button>
-
-<button onclick="resetGame()">Restart</button>
-
-</div>
+<div class="keyboard" id="keyboard"></div>
 
 <div class="message" id="message"></div>
-
-<div class="hint" id="hint"></div>
-
-</div>
 
 </div>
 
 <script>
 
-const puzzles=[
-{
-start:"COLD",
-end:"WARM",
-solution:["CORD","CARD","WARD"]
-},
-
-{
-start:"MILK",
-end:"MEAL",
-solution:["SILK","SEAL","MEAL"]
-},
-
-{
-start:"TIME",
-end:"TIDE",
-solution:["TILE","TILE","TIDE"]
-},
-
-{
-start:"SHIP",
-end:"BOAT",
-solution:["SHOP","SOUP","SOAP"]
+const puzzle = {
+words:["MAIN","MAIL","MALL","HALL","HELL","HEAL","MEAL"],
+clues:[
+"",
+"Postal system",
+"Shopping center",
+"Entryway",
+"Underworld",
+"Cure",
+"Food"
+]
 }
 
-]
-
-let puzzle=puzzles[Math.floor(Math.random()*puzzles.length)]
-
-let ladder=[puzzle.start]
+let current=1
+let guess=""
 
 function draw(){
 
-let html=""
+let ladderHTML=""
+let clueHTML=""
 
-ladder.forEach(w=>{
+puzzle.words.forEach((word,i)=>{
 
-html+=w+"<br>"
+if(i==0 || i==puzzle.words.length-1){
+
+ladderHTML+=`<div class="rung">${word}</div>`
+
+}else{
+
+if(i===current){
+
+ladderHTML+=`<div class="rung active">
+<input id="guess" maxlength="4">
+</div>`
+
+}else{
+
+ladderHTML+=`<div class="rung">----</div>`
+
+}
+
+}
+
+clueHTML+=`<div class="clue">${puzzle.clues[i]}</div>`
 
 })
 
-document.getElementById("ladder").innerHTML=html
+document.getElementById("ladder").innerHTML=ladderHTML
+document.getElementById("clues").innerHTML=clueHTML
 
 }
 
-function addWord(){
+function addLetter(letter){
 
-let word=document.getElementById("guess").value.toUpperCase()
+let input=document.getElementById("guess")
 
-document.getElementById("guess").value=""
+if(!input) return
 
-if(word.length!==4){
+if(input.value.length<4){
 
-showMessage("Use a 4-letter word")
-
-return
+input.value+=letter
 
 }
 
-let last=ladder[ladder.length-1]
+}
 
-let diff=0
+function deleteLetter(){
 
-for(let i=0;i<4;i++){
+let input=document.getElementById("guess")
 
-if(last[i]!==word[i]) diff++
+input.value=input.value.slice(0,-1)
 
 }
 
-if(diff!==1){
+function submitWord(){
 
-showMessage("Change only one letter")
+let input=document.getElementById("guess")
 
-return
+let word=input.value.toUpperCase()
+
+if(word===puzzle.words[current]){
+
+current++
+
+if(current===puzzle.words.length-1){
+
+document.getElementById("message").innerText="Great job! You solved it 🎉"
 
 }
-
-ladder.push(word)
 
 draw()
 
-if(word===puzzle.end){
+}else{
 
-showMessage("Great job! You solved it 🎉")
-
-}
+document.getElementById("message").innerText="Try again"
 
 }
 
-function showHint(){
+}
 
-document.getElementById("hint").innerText=
-"Try changing the first or second letter."
+function createKeyboard(){
+
+const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+let html=""
+
+for(let l of letters){
+
+html+=`<div class="key" onclick="addLetter('${l}')">${l}</div>`
 
 }
 
-function resetGame(){
+html+=`<div class="key" onclick="deleteLetter()">⌫</div>`
+html+=`<div class="key" onclick="submitWord()">ENTER</div>`
 
-ladder=[puzzle.start]
+document.getElementById("keyboard").innerHTML=html
+
+}
 
 draw()
-
-document.getElementById("message").innerText=""
-
-}
-
-function showMessage(msg){
-
-document.getElementById("message").innerText=msg
-
-}
-
-document.getElementById("start").innerText=puzzle.start
-document.getElementById("end").innerText=puzzle.end
-
-draw()
+createKeyboard()
 
 </script>
 
