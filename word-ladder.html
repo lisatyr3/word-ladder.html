@@ -9,15 +9,15 @@
 body{
 font-family:Arial,Helvetica,sans-serif;
 background:#f5f6f7;
-padding:20px;
 display:flex;
 justify-content:center;
+padding:20px;
 }
 
 .container{
 background:white;
 padding:25px;
-max-width:750px;
+max-width:800px;
 width:100%;
 border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,.08);
@@ -31,31 +31,35 @@ color:#2a7b6f;
 
 .instructions{
 text-align:center;
+margin-bottom:25px;
 color:#666;
-margin-bottom:20px;
 }
 
 .game{
 display:flex;
 gap:40px;
+align-items:flex-start;
 }
 
 .ladder{
 border-left:6px solid #666;
 border-right:6px solid #666;
-padding:10px 0;
 }
 
 .rung{
 border-top:6px solid #666;
-padding:14px 30px;
+padding:16px 40px;
 font-size:24px;
 text-align:center;
+width:160px;
+}
+
+.rung:last-child{
+border-bottom:6px solid #666;
 }
 
 .active{
-background:#e8f3f1;
-font-weight:bold;
+background:#e7f1ef;
 }
 
 .clues{
@@ -63,7 +67,9 @@ flex:1;
 }
 
 .clue{
-padding:14px 0;
+height:60px;
+display:flex;
+align-items:center;
 border-bottom:1px solid #eee;
 }
 
@@ -77,7 +83,7 @@ border:1px solid #ccc;
 }
 
 .keyboard{
-margin-top:20px;
+margin-top:25px;
 text-align:center;
 }
 
@@ -129,7 +135,7 @@ Change <b>one letter</b> at a time using the clues.
 
 <script>
 
-const puzzle = {
+const puzzle={
 words:["MAIN","MAIL","MALL","HALL","HELL","HEAL","MEAL"],
 clues:[
 "",
@@ -143,7 +149,6 @@ clues:[
 }
 
 let current=1
-let guess=""
 
 function draw(){
 
@@ -152,23 +157,21 @@ let clueHTML=""
 
 puzzle.words.forEach((word,i)=>{
 
-if(i==0 || i==puzzle.words.length-1){
+if(i===0 || i===puzzle.words.length-1){
 
 ladderHTML+=`<div class="rung">${word}</div>`
 
-}else{
+}else if(i<current){
 
-if(i===current){
+ladderHTML+=`<div class="rung">${puzzle.words[i]}</div>`
 
-ladderHTML+=`<div class="rung active">
-<input id="guess" maxlength="4">
-</div>`
+}else if(i===current){
+
+ladderHTML+=`<div class="rung active"><input id="guess" maxlength="4"></div>`
 
 }else{
 
 ladderHTML+=`<div class="rung">----</div>`
-
-}
 
 }
 
@@ -199,6 +202,8 @@ function deleteLetter(){
 
 let input=document.getElementById("guess")
 
+if(!input) return
+
 input.value=input.value.slice(0,-1)
 
 }
@@ -207,19 +212,21 @@ function submitWord(){
 
 let input=document.getElementById("guess")
 
+if(!input) return
+
 let word=input.value.toUpperCase()
 
 if(word===puzzle.words[current]){
 
 current++
 
+draw()
+
 if(current===puzzle.words.length-1){
 
 document.getElementById("message").innerText="Great job! You solved it 🎉"
 
 }
-
-draw()
 
 }else{
 
