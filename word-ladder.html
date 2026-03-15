@@ -1,297 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Ladder Challenge</title>
-<style>
-body{
-  font-family: Arial, Helvetica, sans-serif;
-  background:#f5f6f7;
-  display:flex;
-  justify-content:center;
-  padding:20px;
-  margin:0;
-}
-.container{
-  background:white;
-  padding:28px;
-  max-width:900px;
-  width:100%;
-  border-radius:16px;
-  box-shadow:0 3px 12px rgba(0,0,0,.08);
-}
-h1{
-  text-align:center;
-  margin:0 0 10px;
-  color:#2a7b6f;
-  font-size:clamp(34px, 5vw, 56px);
-}
-.goal{
-  text-align:center;
-  font-size:32px;
-  font-weight:700;
-  margin-bottom:10px;
-  letter-spacing:1px;
-}
-.instructions{
-  text-align:center;
-  color:#666;
-  font-size:20px;
-  line-height:1.5;
-  margin-bottom:26px;
-}
-.game{
-  display:flex;
-  gap:48px;
-  align-items:flex-start;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.ladder{
-  border-left:8px solid #6b6b6b;
-  border-right:8px solid #6b6b6b;
-  width:300px;
-}
-.rung{
-  min-height:78px;
-  border-top:8px solid #6b6b6b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  font-weight:500;
-  text-transform:uppercase;
-  background:#fff;
-}
-.rung:last-child{
-  border-bottom:8px solid #6b6b6b;
-}
-.rung.active{
-  background:#dfe8e6;
-}
-.placeholder{
-  letter-spacing:3px;
-}
-.clues{
-  flex:1;
-  min-width:280px;
-  max-width:520px;
-}
-.clueHeader{
-  font-size:18px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  margin-bottom:8px;
-}
-.clue{
-  min-height:78px;
-  display:flex;
-  align-items:center;
-  border-top:1px solid #e5e5e5;
-  font-size:18px;
-}
-.clue:last-child{
-  border-bottom:1px solid #e5e5e5;
-}
-input{
-  font-size:28px;
-  text-align:center;
-  width:140px;
-  padding:10px 8px;
-  border-radius:10px;
-  border:1px solid #c9c9c9;
-  text-transform:uppercase;
-}
-.keyboard{
-  margin-top:28px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:center;
-}
-.keyRow{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-.key{
-  min-width:52px;
-  height:52px;
-  padding:0 10px;
-  border:none;
-  border-radius:8px;
-  background:#d9d9dd;
-  font-size:18px;
-  cursor:pointer;
-}
-.key.wide{
-  min-width:110px;
-}
-.message{
-  text-align:center;
-  margin-top:18px;
-  font-size:28px;
-  font-weight:700;
-  min-height:36px;
-}
-@media (max-width:700px){
-  .container{padding:20px;}
-  .goal{font-size:26px;}
-  .instructions{font-size:18px;}
-  .ladder{width:100%; max-width:320px;}
-  .rung{font-size:28px;}
-  .clues{width:100%;}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Ladder Challenge</title>
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      background:#f3f4f4;
+      margin:0;
+      padding:16px;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      background:#fff;
+      border-radius:22px;
+      padding:26px 26px 34px;
+      box-shadow:0 3px 14px rgba(0,0,0,.08);
+    }
+
+    h1{
+      margin:0 0 8px;
+      text-align:center;
+      color:#2d8a78;
+      font-size: clamp(34px, 5vw, 68px);
+      line-height:1.05;
+    }
+
+    .goal{
+      text-align:center;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight:700;
+      margin:8px 0 10px;
+    }
+
+    .instructions{
+      text-align:center;
+      color:#5f5f5f;
+      font-size: clamp(18px, 2.2vw, 22px);
+      line-height:1.45;
+      margin-bottom:28px;
+    }
+
+    .game{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:52px;
+      align-items:start;
+    }
+
+    .ladder{
+      border-left:8px solid #747474;
+      border-right:8px solid #747474;
+    }
+
+    .rung{
+      min-height:88px;
+      border-top:8px solid #747474;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+      font-weight:500;
+      text-transform:uppercase;
+      background:#fff;
+    }
+
+    .rung:last-child{
+      border-bottom:8px solid #747474;
+    }
+
+    .rung.active{
+      background:#dfe7e4;
+    }
+
+    .placeholder{
+      letter-spacing:4px;
+      font-weight:700;
+    }
+
+    .rung input{
+      width:165px;
+      max-width:80%;
+      font-size:30px;
+      text-align:center;
+      text-transform:uppercase;
+      border:1px solid #c8c8c8;
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+      background:#fff;
+    }
+
+    .clues h2{
+      margin:0 0 8px;
+      font-size:24px;
+      letter-spacing:.5px;
+    }
+
+    .clue{
+      min-height:88px;
+      display:flex;
+      align-items:center;
+      border-top:1px solid #e4e4e4;
+      font-size:22px;
+      color:#111;
+    }
+
+    .clue:last-child{
+      border-bottom:1px solid #e4e4e4;
+    }
+
+    .clue.active{
+      font-weight:700;
+      color:#2d8a78;
+    }
+
+    .keyboard{
+      margin-top:28px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+
+    .keyrow{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .key{
+      border:none;
+      border-radius:10px;
+      background:#d9d9dd;
+      min-width:58px;
+      height:58px;
+      font-size:20px;
+      cursor:pointer;
+    }
+
+    .key.wide{
+      min-width:130px;
+      padding:0 18px;
+    }
+
+    .message{
+      text-align:center;
+      min-height:34px;
+      margin-top:18px;
+      font-size:28px;
+      font-weight:700;
+    }
+
+    .helper{
+      text-align:center;
+      color:#666;
+      font-size:16px;
+      margin-top:8px;
+    }
+
+    @media (max-width: 900px){
+      .game{
+        grid-template-columns: 1fr;
+        gap:28px;
+        justify-items:center;
+      }
+
+      .ladder{
+        width:min(360px, 100%);
+      }
+
+      .clues{
+        width:100%;
+      }
+
+      .clue{
+        min-height:68px;
+        font-size:20px;
+      }
+
+      .rung{
+        min-height:78px;
+        font-size:30px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h1>Word Ladder Challenge</h1>
-  <div class="goal" id="goalText"></div>
-  <div class="instructions">
-    Start with the top word and work down.<br>
-    Each new word changes <strong>just one letter</strong> and must match the clue.
+  <div class="wrap">
+    <h1>Word Ladder Challenge</h1>
+    <div class="goal" id="goal"></div>
+    <div class="instructions">
+      Start with the top word and work down.<br>
+      Each answer changes <strong>just one letter</strong> and matches the clue.
+    </div>
+
+    <div class="game">
+      <div class="ladder" id="ladder"></div>
+
+      <div class="clues">
+        <h2>CLUES</h2>
+        <div id="clueList"></div>
+      </div>
+    </div>
+
+    <div class="keyboard" id="keyboard"></div>
+    <div class="message" id="message"></div>
+    <div class="helper">Type in the box or use the on-screen keyboard.</div>
   </div>
 
-  <div class="game">
-    <div class="ladder" id="ladder"></div>
+  <script>
+    const puzzle = {
+      start: "MAIN",
+      end: "MEAL",
+      answers: ["MAIL", "MALL", "HALL", "HELL", "HEAL"],
+      clues: [
+        "Postal system",
+        "Shopping center",
+        "Entryway",
+        "Underworld",
+        "Cure, make better"
+      ]
+    };
 
-    <div class="clues">
-      <div class="clueHeader">Clues</div>
-      <div id="clues"></div>
-    </div>
-  </div>
+    let currentIndex = 0; // 0 = first answer (MAIL)
+    let solved = [];
 
-  <div class="keyboard" id="keyboard"></div>
-  <div class="message" id="message"></div>
-</div>
-
-<script>
-const puzzle = {
-  words: ["MAIN","MAIL","MALL","HALL","HELL","HEAL","MEAL"],
-  clues: [
-    "Postal system",
-    "Shopping center",
-    "Entryway",
-    "Underworld",
-    "Cure, make better"
-  ]
-};
-
-// currentBlank is the index of the word being entered.
-// It starts at 1 because index 0 is the given start word.
-let currentBlank = 1;
-
-function draw() {
-  document.getElementById("goalText").textContent =
-    `${puzzle.words[0]} → ${puzzle.words[puzzle.words.length - 1]}`;
-
-  let ladderHTML = "";
-
-  for (let i = 0; i < puzzle.words.length; i++) {
-    // First and last word always shown
-    if (i === 0 || i === puzzle.words.length - 1) {
-      ladderHTML += `<div class="rung">${puzzle.words[i]}</div>`;
-    }
-    // Already solved middle words
-    else if (i < currentBlank) {
-      ladderHTML += `<div class="rung">${puzzle.words[i]}</div>`;
-    }
-    // Current active blank
-    else if (i === currentBlank) {
-      ladderHTML += `<div class="rung active"><input id="guess" maxlength="4" autocomplete="off" /></div>`;
-    }
-    // Future blanks
-    else {
-      ladderHTML += `<div class="rung"><span class="placeholder">----</span></div>`;
-    }
-  }
-
-  document.getElementById("ladder").innerHTML = ladderHTML;
-
-  let cluesHTML = "";
-  for (let i = 0; i < puzzle.clues.length; i++) {
-    cluesHTML += `<div class="clue">${puzzle.clues[i]}</div>`;
-  }
-  document.getElementById("clues").innerHTML = cluesHTML;
-
-  const input = document.getElementById("guess");
-  if (input) input.focus();
-}
-
-function addLetter(letter) {
-  const input = document.getElementById("guess");
-  if (!input) return;
-  if (input.value.length < 4) {
-    input.value += letter;
-  }
-}
-
-function deleteLetter() {
-  const input = document.getElementById("guess");
-  if (!input) return;
-  input.value = input.value.slice(0, -1);
-}
-
-function clearMessage() {
-  document.getElementById("message").textContent = "";
-}
-
-function showMessage(text) {
-  document.getElementById("message").textContent = text;
-}
-
-function submitWord() {
-  const input = document.getElementById("guess");
-  if (!input) return;
-
-  const word = input.value.toUpperCase().trim();
-  const expected = puzzle.words[currentBlank];
-
-  if (word.length !== 4) {
-    showMessage("Use a 4-letter word.");
-    return;
-  }
-
-  if (word === expected) {
-    clearMessage();
-    currentBlank++;
-
-    // When currentBlank reaches the last index, all blanks are solved.
-    if (currentBlank === puzzle.words.length - 1) {
-      draw();
-      showMessage("Puzzle solved 🎉");
-      return;
+    function updateGoal() {
+      document.getElementById("goal").textContent = `${puzzle.start} → ${puzzle.end}`;
     }
 
-    draw();
-  } else {
-    showMessage("Not quite. Try again.");
-  }
-}
+    function renderLadder() {
+      const ladder = document.getElementById("ladder");
+      let html = `<div class="rung">${puzzle.start}</div>`;
 
-function createKeyboard() {
-  const keyboard = document.getElementById("keyboard");
-  keyboard.innerHTML = `
-    <div class="keyRow">
-      ${"ABCDEFGHIJ".split("").map(l => `<button class="key" onclick="addLetter('${l}')">${l}</button>`).join("")}
-    </div>
-    <div class="keyRow">
-      ${"KLMNOPQRS".split("").map(l => `<button class="key" onclick="addLetter('${l}')">${l}</button>`).join("")}
-    </div>
-    <div class="keyRow">
-      ${"TUVWXYZ".split("").map(l => `<button class="key" onclick="addLetter('${l}')">${l}</button>`).join("")}
-      <button class="key" onclick="deleteLetter()">⌫</button>
-      <button class="key wide" onclick="submitWord()">ENTER</button>
-    </div>
-  `;
-}
+      for (let i = 0; i < puzzle.answers.length; i++) {
+        if (i < solved.length) {
+          html += `<div class="rung">${solved[i]}</div>`;
+        } else if (i === currentIndex) {
+          html += `<div class="rung active"><input id="guessInput" maxlength="4" autocomplete="off" /></div>`;
+        } else {
+          html += `<div class="rung"><span class="placeholder">----</span></div>`;
+        }
+      }
 
-draw();
-createKeyboard();
-</script>
+      html += `<div class="rung">${puzzle.end}</div>`;
+      ladder.innerHTML = html;
+
+      const input = document.getElementById("guessInput");
+      if (input) {
+        input.focus();
+        input.addEventListener("keydown", function(e){
+          if (e.key === "Enter") {
+            submitGuess();
+          }
+        });
+      }
+    }
+
+    function renderClues() {
+      const clueList = document.getElementById("clueList");
+      let html = "";
+
+      for (let i = 0; i < puzzle.clues.length; i++) {
+        const activeClass = i === currentIndex ? "clue active" : "clue";
+        html += `<div class="${activeClass}">${puzzle.clues[i]}</div>`;
+      }
+
+      clueList.innerHTML = html;
+    }
+
+    function renderKeyboard() {
+      const keyboard = document.getElementById("keyboard");
+      keyboard.innerHTML = `
+        <div class="keyrow">
+          ${"ABCDEFGHIJ".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
+        </div>
+        <div class="keyrow">
+          ${"KLMNOPQRS".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
+        </div>
+        <div class="keyrow">
+          ${"TUVWXYZ".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
+          <button class="key" type="button" onclick="backspaceKey()">⌫</button>
+          <button class="key wide" type="button" onclick="submitGuess()">ENTER</button>
+        </div>
+      `;
+    }
+
+    function renderMessage(text = "") {
+      document.getElementById("message").textContent = text;
+    }
+
+    function addLetter(letter) {
+      const input = document.getElementById("guessInput");
+      if (!input) return;
+      if (input.value.length < 4) {
+        input.value += letter;
+      }
+      input.focus();
+    }
+
+    function backspaceKey() {
+      const input = document.getElementById("guessInput");
+      if (!input) return;
+      input.value = input.value.slice(0, -1);
+      input.focus();
+    }
+
+    function submitGuess() {
+      const input = document.getElementById("guessInput");
+      if (!input) return;
+
+      const guess = input.value.toUpperCase().trim();
+      const expected = puzzle.answers[currentIndex];
+
+      if (guess.length !== 4) {
+        renderMessage("Use a 4-letter word.");
+        return;
+      }
+
+      if (guess === expected) {
+        solved.push(expected);
+        currentIndex++;
+        renderMessage("");
+
+        if (currentIndex >= puzzle.answers.length) {
+          renderLadder();
+          renderClues();
+          renderMessage("Puzzle solved 🎉");
+          return;
+        }
+
+        renderLadder();
+        renderClues();
+        return;
+      }
+
+      renderMessage("Not quite. Try again.");
+    }
+
+    function init() {
+      updateGoal();
+      renderLadder();
+      renderClues();
+      renderKeyboard();
+      renderMessage("");
+    }
+
+    init();
+  </script>
 </body>
 </html>
