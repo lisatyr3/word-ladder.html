@@ -86,24 +86,22 @@ border-radius:6px;
 cursor:pointer;
 }
 
-.buttons{text-align:center;margin-top:10px;}
-
-button{
-padding:10px 16px;
-margin:5px;
-border:none;
-border-radius:8px;
-background:#2d8a78;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
 .message{
 text-align:center;
 font-size:20px;
 font-weight:bold;
 margin-top:10px;
+}
+
+button{
+padding:12px 18px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#2d8a78;
+color:white;
+font-size:18px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -138,17 +136,13 @@ Change one letter at a time to reach the final word.
 
 <div class="keyboard" id="keyboard"></div>
 
-<div class="buttons">
-<button onclick="giveHint()">Hint</button>
-</div>
-
 <div class="message" id="message"></div>
 
 </div>
 
 <script>
 
-/* CLEAN VALIDATED PUZZLES */
+/* PUZZLES */
 
 const puzzles=[
 {start:"MAIN",end:"MEAL",answers:["MAIL","MALL","HALL","HELL","HEAL"],clues:["Postal system","Shopping center","Entryway","Underworld","Cure"]},
@@ -160,25 +154,7 @@ const puzzles=[
 {start:"TREE",end:"LEAF",answers:["FREE","FLEE","FLEA","PLEA","LEAD"],clues:["No cost","Run","Insect","Beg","Metal"]},
 {start:"ROAD",end:"BEAR",answers:["GOAD","GOAT","BOAT","BEAT","BEAN"],clues:["Prod","Animal","Boat","Rhythm","Food"]},
 {start:"FIRE",end:"SNOW",answers:["FIRM","FORM","FOAM","ROAM","ROOM"],clues:["Solid","Shape","Bubbles","Wander","Room"]},
-{start:"LOVE",end:"CASH",answers:["LOSE","LOST","COST","CAST","CASE"],clues:["Misplace","Gone","Price","Actors","Box"]},
-{start:"MILK",end:"SALE",answers:["MILD","MILE","TILE","TALE","PALE"],clues:["Gentle","Distance","Floor","Story","Light color"]},
-{start:"BACK",end:"ROOM",answers:["LACK","LOCK","LOOK","BOOK","BOOM"],clues:["Not enough","Secure","See","Read","Bang"]},
-{start:"WOOD",end:"BLEW",answers:["FOOD","FOOT","BOOT","BLOT","BLOW"],clues:["Eat","Foot","Shoe","Ink mark","Air"]},
-{start:"MOON",end:"BLOW",answers:["NOON","SOON","SOOT","BOOT","BLOT"],clues:["Midday","Soon","Ash","Shoe","Ink"]},
-{start:"HEAD",end:"BEAN",answers:["HEAL","HELL","BELL","BELT","BEAT"],clues:["Cure","Underworld","Ring","Waist","Rhythm"]},
-{start:"CAMP",end:"KIND",answers:["CAME","CANE","BANE","BAND","BIND"],clues:["Arrived","Stick","Curse","Music","Tie"]},
-{start:"BEAN",end:"HEAL",answers:["BEAR","BEAT","BELT","BELL","HELL"],clues:["Animal","Rhythm","Waist","Ring","Underworld"]},
-{start:"GOLD",end:"CAVE",answers:["COLD","CORD","CARD","CARE","CAME"],clues:["Not warm","Rope","Card","Care","Arrived"]},
-{start:"MINT",end:"BORE",answers:["MIND","BIND","BAND","BANE","BARE"],clues:["Brain","Tie","Music","Curse","No clothes"]},
-{start:"FIRE",end:"WAGE",answers:["TIRE","TARE","TALE","SALE","SAGE"],clues:["Tired","Weight","Story","Discount","Wise"]},
-{start:"ROAD",end:"CORN",answers:["LOAD","LEAD","LEAK","PEAK","PEAR"],clues:["Carry","Guide","Drip","Top","Fruit"]},
-{start:"FARM",end:"CARE",answers:["FIRM","FIRE","TIRE","TARE","BARE"],clues:["Solid","Flame","Tired","Weight","No clothes"]},
-{start:"LOVE",end:"GOAT",answers:["LOSE","LOST","COST","COAT","BOAT"],clues:["Misplace","Gone","Price","Jacket","Boat"]},
-{start:"WIND",end:"BORN",answers:["BIND","BAND","BANE","BARE","BORE"],clues:["Tie","Music","Curse","No clothes","Hole"]},
-{start:"TREE",end:"BLED",answers:["FREE","FLEE","FLEA","PLEA","PLED"],clues:["Free","Run","Insect","Beg","Promised"]},
-{start:"CAMP",end:"FIRE",answers:["DAMP","DAME","GAME","GATE","FATE"],clues:["Wet","Lady","Play","Door","Destiny"]},
-{start:"SALT",end:"SWEET",answers:["SALE","PALE","PILE","PINE","WINE"],clues:["Store event","Light color","Stack","Tree","Drink"]},
-{start:"SHIP",end:"PORT",answers:["SHOP","STOP","STEP","SEEP","KEEP"],clues:["Store","Halt","Step","Leak","Hold"]}
+{start:"LOVE",end:"CASH",answers:["LOSE","LOST","COST","CAST","CASE"],clues:["Misplace","Gone","Price","Actors","Box"]}
 ];
 
 /* DAILY */
@@ -247,9 +223,11 @@ if(e.key==="Enter") submit();
 function submit(){
 
 let g=document.getElementById("guess");
-let word=g.value.toUpperCase();
+let word=g.value.toUpperCase().trim();
 
 if(word===puzzle.answers[current]){
+
+document.getElementById("message").textContent="";
 
 solved.push(word);
 current++;
@@ -261,7 +239,7 @@ localStorage.setItem("streak",streak);
 document.getElementById("streak").textContent=streak;
 
 document.getElementById("message").innerHTML=`
-🎉 You solved it!<br><br>
+🎉 You solved it!<br>
 <button onclick="nextPuzzle()">Play Another Puzzle</button>
 `;
 
@@ -276,7 +254,7 @@ document.getElementById("message").textContent="Try again";
 
 }
 
-/* NEXT PUZZLE */
+/* NEXT */
 
 function nextPuzzle(){
 
@@ -290,13 +268,6 @@ seconds=0;
 document.getElementById("message").textContent="";
 
 draw();
-}
-
-/* HINT */
-
-function giveHint(){
-let word=puzzle.answers[current];
-document.getElementById("message").textContent="Starts with: "+word[0];
 }
 
 /* KEYBOARD */
