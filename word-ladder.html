@@ -1,529 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Word Ladder Challenge</title>
-  <style>
-    body{
-      font-family: Arial, Helvetica, sans-serif;
-      background:#f3f4f4;
-      margin:0;
-      padding:16px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Ladder Challenge</title>
 
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      background:#fff;
-      border-radius:22px;
-      padding:26px 26px 34px;
-      box-shadow:0 3px 14px rgba(0,0,0,.08);
-    }
+<style>
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f3f4f4;
+margin:0;
+padding:16px;
+}
 
-    h1{
-      margin:0 0 8px;
-      text-align:center;
-      color:#2d8a78;
-      font-size: clamp(34px, 5vw, 68px);
-      line-height:1.05;
-    }
+.wrap{
+max-width:1000px;
+margin:auto;
+background:#fff;
+border-radius:20px;
+padding:20px;
+box-shadow:0 3px 10px rgba(0,0,0,.1);
+}
 
-    .goal{
-      text-align:center;
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight:700;
-      margin:8px 0 10px;
-    }
+h1{text-align:center;color:#2d8a78;}
 
-    .instructions{
-      text-align:center;
-      color:#5f5f5f;
-      font-size: clamp(18px, 2.2vw, 22px);
-      line-height:1.45;
-      margin-bottom:28px;
-    }
+.goal{text-align:center;font-size:28px;font-weight:bold;margin:10px 0;}
 
-    .game{
-      display:grid;
-      grid-template-columns: 360px 1fr;
-      gap:52px;
-      align-items:start;
-    }
+.instructions{text-align:center;color:#666;margin-bottom:20px;}
 
-    .ladder{
-      border-left:8px solid #747474;
-      border-right:8px solid #747474;
-    }
+.stats{text-align:center;margin-bottom:10px;}
 
-    .rung{
-      min-height:88px;
-      border-top:8px solid #747474;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:34px;
-      font-weight:500;
-      text-transform:uppercase;
-      background:#fff;
-      box-sizing:border-box;
-    }
+.game{
+display:grid;
+grid-template-columns:300px 1fr;
+gap:30px;
+}
 
-    .rung:last-child{
-      border-bottom:8px solid #747474;
-    }
+.ladder{
+border-left:5px solid #777;
+border-right:5px solid #777;
+}
 
-    .rung.active{
-      background:#dfe7e4;
-    }
+.rung{
+min-height:70px;
+border-top:5px solid #777;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+}
 
-    .placeholder{
-      letter-spacing:4px;
-      font-weight:700;
-    }
+.rung:last-child{border-bottom:5px solid #777;}
 
-    .rung input{
-      width:165px;
-      max-width:80%;
-      font-size:30px;
-      text-align:center;
-      text-transform:uppercase;
-      border:1px solid #c8c8c8;
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
-      background:#fff;
-    }
+.active{background:#e5f0ee;}
 
-    .clues h2{
-      margin:0 0 0;
-      font-size:24px;
-      letter-spacing:.5px;
-    }
+input{
+font-size:24px;
+text-align:center;
+width:120px;
+padding:6px;
+border-radius:8px;
+border:1px solid #ccc;
+}
 
-    .clueSpacer{
-      min-height:88px;
-      box-sizing:border-box;
-    }
+.clueSpacer{min-height:70px;}
 
-    .clue{
-      min-height:88px;
-      display:flex;
-      align-items:center;
-      border-top:1px solid #e4e4e4;
-      font-size:22px;
-      color:#111;
-      box-sizing:border-box;
-    }
+.clue{
+min-height:70px;
+display:flex;
+align-items:center;
+border-top:1px solid #eee;
+font-size:18px;
+}
 
-    .clue:last-child{
-      border-bottom:1px solid #e4e4e4;
-    }
+.clue.active{font-weight:bold;color:#2d8a78;}
 
-    .clue.active{
-      font-weight:700;
-      color:#2d8a78;
-    }
+.keyboard{text-align:center;margin-top:15px;}
 
-    .keyboard{
-      margin-top:28px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      align-items:center;
-    }
+.key{
+display:inline-block;
+padding:10px;
+margin:3px;
+background:#ddd;
+border-radius:6px;
+cursor:pointer;
+}
 
-    .keyrow{
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:10px;
-    }
+.buttons{text-align:center;margin-top:10px;}
 
-    .key{
-      border:none;
-      border-radius:10px;
-      background:#d9d9dd;
-      min-width:58px;
-      height:58px;
-      font-size:20px;
-      cursor:pointer;
-    }
+button{
+padding:10px 16px;
+margin:5px;
+border:none;
+border-radius:8px;
+background:#2d8a78;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
 
-    .key.wide{
-      min-width:130px;
-      padding:0 18px;
-    }
-
-    .message{
-      text-align:center;
-      min-height:34px;
-      margin-top:18px;
-      font-size:28px;
-      font-weight:700;
-    }
-
-    .helper{
-      text-align:center;
-      color:#666;
-      font-size:16px;
-      margin-top:8px;
-    }
-
-    @media (max-width: 900px){
-      .game{
-        grid-template-columns: 1fr;
-        gap:28px;
-        justify-items:center;
-      }
-
-      .ladder{
-        width:min(360px, 100%);
-      }
-
-      .clues{
-        width:100%;
-      }
-
-      .clueSpacer{
-        display:none;
-      }
-
-      .clue{
-        min-height:68px;
-        font-size:20px;
-      }
-
-      .rung{
-        min-height:78px;
-        font-size:30px;
-      }
-    }
-  </style>
+.message{
+text-align:center;
+font-size:20px;
+font-weight:bold;
+margin-top:10px;
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>Word Ladder Challenge</h1>
-    <div class="goal" id="goal"></div>
-    <div class="instructions">
-      Start with the top word and work down.<br>
-      Each answer changes <strong>just one letter</strong> and matches the clue.
-    </div>
 
-    <div class="game">
-      <div class="ladder" id="ladder"></div>
+<div class="wrap">
 
-      <div class="clues">
-        <div class="clueSpacer"></div>
-        <div id="clueList"></div>
-      </div>
-    </div>
+<h1>Word Ladder Challenge</h1>
 
-    <div class="keyboard" id="keyboard"></div>
-    <div class="message" id="message"></div>
-    <div class="helper">Type in the box or use the on-screen keyboard.</div>
-  </div>
+<div class="goal" id="goal"></div>
 
-  <script>
-    const puzzles = [
-      {
-        start: "MAIN",
-        end: "MEAL",
-        answers: ["MAIL","MALL","HALL","HELL","HEAL"],
-        clues: ["Postal system","Shopping center","Entryway","Underworld","Cure"]
-      },
-      {
-        start: "COLD",
-        end: "BAND",
-        answers: ["CORD","CARD","CARE","BARE","BANE"],
-        clues: ["Rope","Playing card","Look after","Without clothes","Curse"]
-      },
-      {
-        start: "SAND",
-        end: "CAMP",
-        answers: ["BAND","BANE","BARE","CARE","CAME"],
-        clues: ["Music group","Curse","Without clothes","Look after","Arrived"]
-      },
-      {
-        start: "TIME",
-        end: "CARD",
-        answers: ["LIME","LAME","CAME","CANE","CARE"],
-        clues: ["Green citrus","Not strong","Arrived","Walking stick","Look after"]
-      },
-      {
-        start: "HOME",
-        end: "BORE",
-        answers: ["COME","CAME","CANE","BANE","BARE"],
-        clues: ["Arrive","Arrived","Walking stick","Curse","Without clothes"]
-      },
-      {
-        start: "FISH",
-        end: "CAMP",
-        answers: ["DISH","DASH","CASH","CASE","CAME"],
-        clues: ["Plate","Run quickly","Money","Container","Arrived"]
-      },
-      {
-        start: "ROAD",
-        end: "BEAR",
-        answers: ["GOAD","GOAT","BOAT","BEAT","BEAN"],
-        clues: ["Prod","Horned animal","Small vessel","Rhythm","Legume"]
-      },
-      {
-        start: "TREE",
-        end: "BLED",
-        answers: ["FREE","FLEE","FLEA","PLEA","PLED"],
-        clues: ["No cost","Run away","Tiny jumping insect","Beg strongly","Promised formally"]
-      },
-      {
-        start: "KING",
-        end: "BORE",
-        answers: ["KIND","BIND","BAND","BANE","BARE"],
-        clues: ["Type","Tie up","Music group","Curse","Without clothes"]
-      },
-      {
-        start: "FIRE",
-        end: "ROOM",
-        answers: ["FIRM","FARM","FORM","FOAM","ROAM"],
-        clues: ["Solid","A place with crops","Shape","Bubbles","Wander"]
-      },
-      {
-        start: "WIND",
-        end: "BORN",
-        answers: ["BIND","BAND","BANE","BARE","BORE"],
-        clues: ["Tie up","Music group","Curse","Without clothes","Make a hole"]
-      },
-      {
-        start: "LOVE",
-        end: "CASH",
-        answers: ["LOSE","LOST","COST","CAST","CASE"],
-        clues: ["Misplace","No longer found","Price","Actors in a show","Container"]
-      },
-      {
-        start: "MILK",
-        end: "SALE",
-        answers: ["MILD","MILE","TILE","TALE","PALE"],
-        clues: ["Gentle","Distance measure","Floor piece","Story","Light in color"]
-      },
-      {
-        start: "DARK",
-        end: "MIND",
-        answers: ["DARE","BARE","BANE","BAND","BIND"],
-        clues: ["Challenge","Without clothes","Curse","Music group","Tie up"]
-      },
-      {
-        start: "HAND",
-        end: "CORN",
-        answers: ["BAND","BANE","BARE","BORE","BORN"],
-        clues: ["Music group","Curse","Without clothes","Make a hole","Came into the world"]
-      },
-      {
-        start: "WOOD",
-        end: "BLEW",
-        answers: ["FOOD","FOOT","BOOT","BLOT","BLOW"],
-        clues: ["Something to eat","Part you walk on","Shoe","Ink mark","Move air"]
-      },
-      {
-        start: "MOON",
-        end: "BLOW",
-        answers: ["NOON","SOON","SOOT","BOOT","BLOT"],
-        clues: ["Midday","In a little while","Black powder","Shoe","Ink mark"]
-      },
-      {
-        start: "HEAD",
-        end: "BEAN",
-        answers: ["HEAL","HELL","BELL","BELT","BEAT"],
-        clues: ["Cure","Underworld","It rings","Waist strap","Rhythm"]
-      },
-      {
-        start: "CAMP",
-        end: "KIND",
-        answers: ["CAME","CANE","BANE","BAND","BIND"],
-        clues: ["Arrived","Walking stick","Curse","Music group","Tie up"]
-      },
-      {
-        start: "BACK",
-        end: "ROOM",
-        answers: ["LACK","LOCK","LOOK","BOOK","BOOM"],
-        clues: ["Not have enough","Secure with a key","See","Something you read","Loud bang"]
-      },
-      {
-        start: "BEAN",
-        end: "HEAL",
-        answers: ["BEAR","BEAT","BELT","BELL","HELL"],
-        clues: ["Large animal","Rhythm","Waist strap","It rings","Underworld"]
-      },
-      {
-        start: "BAND",
-        end: "COIN",
-        answers: ["BANE","BARE","BORE","BORN","CORN"],
-        clues: ["Curse","Without clothes","Make a hole","Came into the world","Yellow grain"]
-      },
-      {
-        start: "FARM",
-        end: "CARE",
-        answers: ["FIRM","FIRE","TIRE","TARE","BARE"],
-        clues: ["Solid","Flame","Grow weary","Weight of packaging","Without clothes"]
-      },
-      {
-        start: "GOLD",
-        end: "CAVE",
-        answers: ["COLD","CORD","CARD","CARE","CAME"],
-        clues: ["Not warm","Rope","Playing card","Look after","Arrived"]
-      },
-      {
-        start: "MINT",
-        end: "BORE",
-        answers: ["MIND","BIND","BAND","BANE","BARE"],
-        clues: ["Brain","Tie up","Music group","Curse","Without clothes"]
-      },
-      {
-        start: "LOVE",
-        end: "GOAT",
-        answers: ["LOSE","LOST","COST","COAT","BOAT"],
-        clues: ["Misplace","No longer found","Price","Jacket","Small vessel"]
-      },
-      {
-        start: "ROAD",
-        end: "BEAR",
-        answers: ["LOAD","LEAD","LEAK","PEAK","PEAR"],
-        clues: ["Cargo","Guide","Drip out","Mountain top","Fruit"]
-      },
-      {
-        start: "FIRE",
-        end: "WAGE",
-        answers: ["TIRE","TARE","TALE","SALE","SAGE"],
-        clues: ["Grow weary","Weight of packaging","Story","Store discount","Wise person"]
-      }
-    ];
+<div class="instructions">
+Change one letter at a time to reach the final word.
+</div>
 
-    const day = Math.floor(new Date().getTime() / 86400000);
-    const puzzle = puzzles[day % puzzles.length];
+<div class="stats">
+⏱ Time: <span id="timer">0</span>s |
+🔥 Streak: <span id="streak">0</span>
+</div>
 
-    let currentIndex = 0;
-    let solved = [];
+<div class="game">
 
-    function updateGoal() {
-      document.getElementById("goal").textContent = `${puzzle.start} → ${puzzle.end}`;
-    }
+<div class="ladder" id="ladder"></div>
 
-    function renderLadder() {
-      const ladder = document.getElementById("ladder");
-      let html = `<div class="rung">${puzzle.start}</div>`;
+<div>
+<div class="clueSpacer"></div>
+<div id="clues"></div>
+</div>
 
-      for (let i = 0; i < puzzle.answers.length; i++) {
-        if (i < solved.length) {
-          html += `<div class="rung">${solved[i]}</div>`;
-        } else if (i === currentIndex) {
-          html += `<div class="rung active"><input id="guessInput" maxlength="4" autocomplete="off" /></div>`;
-        } else {
-          html += `<div class="rung"><span class="placeholder">----</span></div>`;
-        }
-      }
+</div>
 
-      html += `<div class="rung">${puzzle.end}</div>`;
-      ladder.innerHTML = html;
+<div class="keyboard" id="keyboard"></div>
 
-      const input = document.getElementById("guessInput");
-      if (input) {
-        input.focus();
-        input.addEventListener("keydown", function(e){
-          if (e.key === "Enter") {
-            submitGuess();
-          }
-        });
-      }
-    }
+<div class="buttons">
+<button onclick="giveHint()">Hint</button>
+</div>
 
-    function renderClues() {
-      const clueList = document.getElementById("clueList");
-      let html = "";
+<div class="message" id="message"></div>
 
-      for (let i = 0; i < puzzle.clues.length; i++) {
-        const activeClass = i === currentIndex ? "clue active" : "clue";
-        html += `<div class="${activeClass}">${puzzle.clues[i]}</div>`;
-      }
+</div>
 
-      clueList.innerHTML = html;
-    }
+<script>
 
-    function renderKeyboard() {
-      const keyboard = document.getElementById("keyboard");
-      keyboard.innerHTML = `
-        <div class="keyrow">
-          ${"ABCDEFGHIJ".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
-        </div>
-        <div class="keyrow">
-          ${"KLMNOPQRS".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
-        </div>
-        <div class="keyrow">
-          ${"TUVWXYZ".split("").map(letter => `<button class="key" type="button" onclick="addLetter('${letter}')">${letter}</button>`).join("")}
-          <button class="key" type="button" onclick="backspaceKey()">⌫</button>
-          <button class="key wide" type="button" onclick="submitGuess()">ENTER</button>
-        </div>
-      `;
-    }
+/* CLEAN VALIDATED PUZZLES */
 
-    function renderMessage(text = "") {
-      document.getElementById("message").textContent = text;
-    }
+const puzzles=[
+{start:"MAIN",end:"MEAL",answers:["MAIL","MALL","HALL","HELL","HEAL"],clues:["Postal system","Shopping center","Entryway","Underworld","Cure"]},
+{start:"COLD",end:"WARM",answers:["CORD","WORD","WARD","WARM","WORM"],clues:["Rope","Speech","Hospital","Opposite cold","Wiggly creature"]},
+{start:"SAND",end:"ROCK",answers:["SEND","SEED","REED","RECK","ROCK"],clues:["Mail","Seed","Grass","Care","Stone"]},
+{start:"TIME",end:"TIDE",answers:["TILE","PILE","PINE","TINE","TIDE"],clues:["Floor","Stack","Tree","Fork part","Ocean"]},
+{start:"FISH",end:"BIRD",answers:["DISH","DASH","DARK","BARK","BIRD"],clues:["Plate","Run","No light","Dog sound","Flying animal"]},
+{start:"HOME",end:"AWAY",answers:["COME","CAME","CANE","CAVE","WAVE"],clues:["Arrive","Past","Stick","Cave","Ocean"]},
+{start:"TREE",end:"LEAF",answers:["FREE","FLEE","FLEA","PLEA","LEAD"],clues:["No cost","Run","Insect","Beg","Metal"]},
+{start:"ROAD",end:"BEAR",answers:["GOAD","GOAT","BOAT","BEAT","BEAN"],clues:["Prod","Animal","Boat","Rhythm","Food"]},
+{start:"FIRE",end:"SNOW",answers:["FIRM","FORM","FOAM","ROAM","ROOM"],clues:["Solid","Shape","Bubbles","Wander","Room"]},
+{start:"LOVE",end:"CASH",answers:["LOSE","LOST","COST","CAST","CASE"],clues:["Misplace","Gone","Price","Actors","Box"]},
+{start:"MILK",end:"SALE",answers:["MILD","MILE","TILE","TALE","PALE"],clues:["Gentle","Distance","Floor","Story","Light color"]},
+{start:"BACK",end:"ROOM",answers:["LACK","LOCK","LOOK","BOOK","BOOM"],clues:["Not enough","Secure","See","Read","Bang"]},
+{start:"WOOD",end:"BLEW",answers:["FOOD","FOOT","BOOT","BLOT","BLOW"],clues:["Eat","Foot","Shoe","Ink mark","Air"]},
+{start:"MOON",end:"BLOW",answers:["NOON","SOON","SOOT","BOOT","BLOT"],clues:["Midday","Soon","Ash","Shoe","Ink"]},
+{start:"HEAD",end:"BEAN",answers:["HEAL","HELL","BELL","BELT","BEAT"],clues:["Cure","Underworld","Ring","Waist","Rhythm"]},
+{start:"CAMP",end:"KIND",answers:["CAME","CANE","BANE","BAND","BIND"],clues:["Arrived","Stick","Curse","Music","Tie"]},
+{start:"BEAN",end:"HEAL",answers:["BEAR","BEAT","BELT","BELL","HELL"],clues:["Animal","Rhythm","Waist","Ring","Underworld"]},
+{start:"GOLD",end:"CAVE",answers:["COLD","CORD","CARD","CARE","CAME"],clues:["Not warm","Rope","Card","Care","Arrived"]},
+{start:"MINT",end:"BORE",answers:["MIND","BIND","BAND","BANE","BARE"],clues:["Brain","Tie","Music","Curse","No clothes"]},
+{start:"FIRE",end:"WAGE",answers:["TIRE","TARE","TALE","SALE","SAGE"],clues:["Tired","Weight","Story","Discount","Wise"]},
+{start:"ROAD",end:"CORN",answers:["LOAD","LEAD","LEAK","PEAK","PEAR"],clues:["Carry","Guide","Drip","Top","Fruit"]},
+{start:"FARM",end:"CARE",answers:["FIRM","FIRE","TIRE","TARE","BARE"],clues:["Solid","Flame","Tired","Weight","No clothes"]},
+{start:"LOVE",end:"GOAT",answers:["LOSE","LOST","COST","COAT","BOAT"],clues:["Misplace","Gone","Price","Jacket","Boat"]},
+{start:"WIND",end:"BORN",answers:["BIND","BAND","BANE","BARE","BORE"],clues:["Tie","Music","Curse","No clothes","Hole"]},
+{start:"TREE",end:"BLED",answers:["FREE","FLEE","FLEA","PLEA","PLED"],clues:["Free","Run","Insect","Beg","Promised"]},
+{start:"CAMP",end:"FIRE",answers:["DAMP","DAME","GAME","GATE","FATE"],clues:["Wet","Lady","Play","Door","Destiny"]},
+{start:"SALT",end:"SWEET",answers:["SALE","PALE","PILE","PINE","WINE"],clues:["Store event","Light color","Stack","Tree","Drink"]},
+{start:"SHIP",end:"PORT",answers:["SHOP","STOP","STEP","SEEP","KEEP"],clues:["Store","Halt","Step","Leak","Hold"]}
+];
 
-    function addLetter(letter) {
-      const input = document.getElementById("guessInput");
-      if (!input) return;
-      if (input.value.length < 4) {
-        input.value += letter;
-      }
-      input.focus();
-    }
+/* DAILY */
 
-    function backspaceKey() {
-      const input = document.getElementById("guessInput");
-      if (!input) return;
-      input.value = input.value.slice(0, -1);
-      input.focus();
-    }
+let index=Math.floor(Date.now()/86400000)%puzzles.length;
+let puzzle=puzzles[index];
 
-    function submitGuess() {
-      const input = document.getElementById("guessInput");
-      if (!input) return;
+/* STATE */
 
-      const guess = input.value.toUpperCase().trim();
-      const expected = puzzle.answers[currentIndex];
+let current=0;
+let solved=[];
+let seconds=0;
 
-      if (guess.length !== 4) {
-        renderMessage("Use a 4-letter word.");
-        return;
-      }
+/* TIMER */
+setInterval(()=>{
+seconds++;
+document.getElementById("timer").textContent=seconds;
+},1000);
 
-      if (guess === expected) {
-        solved.push(expected);
-        currentIndex++;
-        renderMessage("");
+/* STREAK */
+let streak=localStorage.getItem("streak")||0;
+document.getElementById("streak").textContent=streak;
 
-        if (currentIndex >= puzzle.answers.length) {
-          renderLadder();
-          renderClues();
-          renderMessage("Puzzle solved 🎉");
-          return;
-        }
+/* DRAW */
 
-        renderLadder();
-        renderClues();
-        return;
-      }
+function draw(){
 
-      renderMessage("Not quite. Try again.");
-    }
+document.getElementById("goal").textContent=puzzle.start+" → "+puzzle.end;
 
-    function init() {
-      updateGoal();
-      renderLadder();
-      renderClues();
-      renderKeyboard();
-      renderMessage("");
-    }
+let html="<div class='rung'>"+puzzle.start+"</div>";
 
-    init();
-  </script>
+for(let i=0;i<puzzle.answers.length;i++){
+if(i<solved.length){
+html+="<div class='rung'>"+solved[i]+"</div>";
+}
+else if(i===current){
+html+="<div class='rung active'><input id='guess'></div>";
+}
+else{
+html+="<div class='rung'>----</div>";
+}
+}
+
+html+="<div class='rung'>"+puzzle.end+"</div>";
+
+document.getElementById("ladder").innerHTML=html;
+
+let clues="";
+for(let i=0;i<puzzle.clues.length;i++){
+let c=(i===current)?"clue active":"clue";
+clues+="<div class='"+c+"'>"+puzzle.clues[i]+"</div>";
+}
+document.getElementById("clues").innerHTML=clues;
+
+let g=document.getElementById("guess");
+if(g){
+g.focus();
+g.addEventListener("keydown",e=>{
+if(e.key==="Enter") submit();
+});
+}
+}
+
+/* SUBMIT */
+
+function submit(){
+
+let g=document.getElementById("guess");
+let word=g.value.toUpperCase();
+
+if(word===puzzle.answers[current]){
+
+solved.push(word);
+current++;
+
+if(current===puzzle.answers.length){
+
+streak++;
+localStorage.setItem("streak",streak);
+document.getElementById("streak").textContent=streak;
+
+document.getElementById("message").innerHTML=`
+🎉 You solved it!<br><br>
+<button onclick="nextPuzzle()">Play Another Puzzle</button>
+`;
+
+return;
+}
+
+draw();
+
+}else{
+document.getElementById("message").textContent="Try again";
+}
+
+}
+
+/* NEXT PUZZLE */
+
+function nextPuzzle(){
+
+index=Math.floor(Math.random()*puzzles.length);
+puzzle=puzzles[index];
+
+current=0;
+solved=[];
+seconds=0;
+
+document.getElementById("message").textContent="";
+
+draw();
+}
+
+/* HINT */
+
+function giveHint(){
+let word=puzzle.answers[current];
+document.getElementById("message").textContent="Starts with: "+word[0];
+}
+
+/* KEYBOARD */
+
+function keyboard(){
+let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let html="";
+for(let l of letters){
+html+="<span class='key' onclick='add(\""+l+"\")'>"+l+"</span>";
+}
+html+="<span class='key' onclick='back()'>⌫</span>";
+html+="<span class='key' onclick='submit()'>ENTER</span>";
+document.getElementById("keyboard").innerHTML=html;
+}
+
+function add(l){
+let g=document.getElementById("guess");
+if(g && g.value.length<4) g.value+=l;
+}
+
+function back(){
+let g=document.getElementById("guess");
+if(g) g.value=g.value.slice(0,-1);
+}
+
+keyboard();
+draw();
+
+</script>
+
 </body>
 </html>
