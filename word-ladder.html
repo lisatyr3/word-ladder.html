@@ -222,23 +222,27 @@ if(e.key==="Enter") submit();
 
 function submit(){
 
-let g=document.getElementById("guess");
-let word=g.value.toUpperCase().trim();
+let g = document.getElementById("guess");
+let word = g.value.toUpperCase().trim();
 
-if(word===puzzle.answers[current]){
+let correctAnswer = puzzle.answers[current];
 
-document.getElementById("message").textContent="";
+if(word === correctAnswer){
+
+document.getElementById("message").textContent = "";
 
 solved.push(word);
 current++;
 
-if(current===puzzle.answers.length){
+draw(); // 🔥 MOVE DRAW FIRST (important)
+
+if(current === puzzle.answers.length){
 
 streak++;
 localStorage.setItem("streak",streak);
 document.getElementById("streak").textContent=streak;
 
-document.getElementById("message").innerHTML=`
+document.getElementById("message").innerHTML = `
 🎉 You solved it!<br>
 <button onclick="nextPuzzle()">Play Another Puzzle</button>
 `;
@@ -246,10 +250,8 @@ document.getElementById("message").innerHTML=`
 return;
 }
 
-draw();
-
 }else{
-document.getElementById("message").textContent="Try again";
+document.getElementById("message").textContent = "Try again";
 }
 
 }
