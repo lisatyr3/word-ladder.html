@@ -142,19 +142,100 @@ Change one letter at a time to reach the final word.
 
 <script>
 
-/* PUZZLES */
+/* CLEAN PUZZLES */
 
 const puzzles=[
-{start:"MAIN",end:"MEAL",answers:["MAIL","MALL","HALL","HELL","HEAL"],clues:["Postal system","Shopping center","Entryway","Underworld","Cure"]},
-{start:"COLD",end:"WARM",answers:["CORD","WORD","WARD","WARM","WORM"],clues:["Rope","Speech","Hospital","Opposite cold","Wiggly creature"]},
-{start:"SAND",end:"ROCK",answers:["SEND","SEED","REED","RECK","ROCK"],clues:["Mail","Seed","Grass","Care","Stone"]},
-{start:"TIME",end:"TIDE",answers:["TILE","PILE","PINE","TINE","TIDE"],clues:["Floor","Stack","Tree","Fork part","Ocean"]},
-{start:"FISH",end:"BIRD",answers:["DISH","DASH","DARK","BARK","BIRD"],clues:["Plate","Run","No light","Dog sound","Flying animal"]},
-{start:"HOME",end:"AWAY",answers:["COME","CAME","CANE","CAVE","WAVE"],clues:["Arrive","Past","Stick","Cave","Ocean"]},
-{start:"TREE",end:"LEAF",answers:["FREE","FLEE","FLEA","PLEA","LEAD"],clues:["No cost","Run","Insect","Beg","Metal"]},
-{start:"ROAD",end:"BEAR",answers:["GOAD","GOAT","BOAT","BEAT","BEAN"],clues:["Prod","Animal","Boat","Rhythm","Food"]},
-{start:"FIRE",end:"SNOW",answers:["FIRM","FORM","FOAM","ROAM","ROOM"],clues:["Solid","Shape","Bubbles","Wander","Room"]},
-{start:"LOVE",end:"CASH",answers:["LOSE","LOST","COST","CAST","CASE"],clues:["Misplace","Gone","Price","Actors","Box"]}
+
+{start:"MAIN",end:"MEAL",
+answers:["MAIL","MALL","HALL","HELL","HEAL"],
+clues:[
+"Letters delivered",
+"Indoor shopping center",
+"Entryway",
+"Underworld",
+"Make better"
+]},
+
+{start:"COLD",end:"WARM",
+answers:["CORD","WORD","WARD","WARM","WORM"],
+clues:[
+"Thick string",
+"Spoken unit",
+"Hospital section",
+"Opposite of cold",
+"Wriggling creature"
+]},
+
+{start:"SAND",end:"ROCK",
+answers:["SEND","SEED","REED","RECK","ROCK"],
+clues:[
+"Mail something",
+"Plant starter",
+"Tall grass",
+"Care about",
+"Hard stone"
+]},
+
+{start:"TIME",end:"TIDE",
+answers:["TILE","PILE","PINE","TINE","TIDE"],
+clues:[
+"Floor piece",
+"Stack of items",
+"Evergreen tree",
+"Fork prong",
+"Ocean rise and fall"
+]},
+
+{start:"FISH",end:"BIRD",
+answers:["DISH","DASH","DARK","BARK","BIRD"],
+clues:[
+"Plate for food",
+"Run quickly",
+"No light",
+"Dog sound",
+"Flying animal"
+]},
+
+{start:"HOME",end:"AWAY",
+answers:["COME","CAME","CANE","CAVE","WAVE"],
+clues:[
+"Move toward",
+"Past of come",
+"Walking stick",
+"Rock opening",
+"Ocean movement"
+]},
+
+{start:"TREE",end:"LEAF",
+answers:["FREE","FLEE","FLEA","PLEA","LEAD"],
+clues:[
+"No cost",
+"Run away",
+"Jumping insect",
+"Beg strongly",
+"Heavy metal element"
+]},
+
+{start:"FIRE",end:"SNOW",
+answers:["FIRM","FORM","FOAM","ROAM","ROOM"],
+clues:[
+"Solid or steady",
+"Shape or structure",
+"Bubbles on water",
+"Wander freely",
+"Enclosed space"
+]},
+
+{start:"LOVE",end:"CASH",
+answers:["LOSE","LOST","COST","CAST","CASE"],
+clues:[
+"Fail to keep",
+"No longer found",
+"Price amount",
+"Actors in a show",
+"Container or box"
+]}
+
 ];
 
 /* DAILY */
@@ -222,27 +303,25 @@ if(e.key==="Enter") submit();
 
 function submit(){
 
-let g = document.getElementById("guess");
-let word = g.value.toUpperCase().trim();
+let g=document.getElementById("guess");
+let word=g.value.toUpperCase().trim();
 
-let correctAnswer = puzzle.answers[current];
+if(word===puzzle.answers[current]){
 
-if(word === correctAnswer){
-
-document.getElementById("message").textContent = "";
+document.getElementById("message").textContent="";
 
 solved.push(word);
 current++;
 
-draw(); // 🔥 MOVE DRAW FIRST (important)
+draw();
 
-if(current === puzzle.answers.length){
+if(current===puzzle.answers.length){
 
 streak++;
 localStorage.setItem("streak",streak);
 document.getElementById("streak").textContent=streak;
 
-document.getElementById("message").innerHTML = `
+document.getElementById("message").innerHTML=`
 🎉 You solved it!<br>
 <button onclick="nextPuzzle()">Play Another Puzzle</button>
 `;
@@ -251,7 +330,7 @@ return;
 }
 
 }else{
-document.getElementById("message").textContent = "Try again";
+document.getElementById("message").textContent="Try again";
 }
 
 }
