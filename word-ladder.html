@@ -5,49 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Word Ladder</title>
 <style>
-body{
+body {
     font-family: Arial, sans-serif;
     text-align: center;
     background: #f5f5f5;
     margin: 0;
 }
-
-.container{
+.container {
     max-width: 980px;
     margin: auto;
     padding: 20px;
 }
-
-h1{
+h1 {
     margin-bottom: 6px;
 }
-
-.subtitle{
+.subtitle {
     color: #666;
     margin-bottom: 15px;
     font-size: 20px;
 }
-
-.stats{
+.stats {
     margin-bottom: 20px;
     font-size: 18px;
 }
-
-.game{
+.game {
     display: flex;
     gap: 28px;
     justify-content: center;
     align-items: flex-start;
     flex-wrap: wrap;
 }
-
-.ladder{
+.ladder {
     border: 4px solid #888;
     width: 260px;
     background: #fff;
 }
-
-.step{
+.step {
     border-bottom: 2px solid #888;
     min-height: 72px;
     display: flex;
@@ -56,48 +49,45 @@ h1{
     font-size: 26px;
     background: #fff;
 }
-
-.step:last-child{
+.step:last-child {
     border-bottom: none;
 }
-
-.step.active{
+.step.active {
     background: #e6f0ee;
 }
-
-.clues{
+.step.placeholder {
+    color: #111;
+    letter-spacing: 2px;
+}
+.clues {
     text-align: left;
     width: 360px;
     max-width: 100%;
 }
-
-.clue{
+.clue {
     min-height: 72px;
-    padding: 0 10px;
+    padding: 0 12px;
     border-bottom: 1px solid #ddd;
     display: flex;
     align-items: center;
     font-size: 20px;
 }
-
-.clue.active{
+.clue.active {
     color: #2d8a78;
     font-weight: 700;
+    background: #eef7f4;
 }
-
-input{
+input {
     font-size: 22px;
     padding: 8px;
     width: 140px;
     text-align: center;
     text-transform: uppercase;
 }
-
-.controls{
+.controls {
     margin-top: 18px;
 }
-
-button{
+button {
     padding: 12px 18px;
     margin: 5px;
     font-size: 18px;
@@ -106,23 +96,20 @@ button{
     border: 1px solid #999;
     background: white;
 }
-
-.success{
+.success {
     color: green;
     font-weight: bold;
 }
-
-#message{
+#message {
     min-height: 60px;
     margin-top: 10px;
     font-size: 20px;
 }
-
-@media (max-width: 700px){
-    .clues{
+@media (max-width: 700px) {
+    .clues {
         width: 100%;
     }
-    .subtitle{
+    .subtitle {
         font-size: 18px;
     }
 }
@@ -174,140 +161,9 @@ clues:["No cost","Run away","Jumping insect","Beg strongly","Heavy metal element
 start:"LOVE", end:"CASH",
 answers:["LOSE","LOST","COST","CAST","CASE"],
 clues:["Fail to keep","No longer found","Price amount","Actors in a show","Container or box"]
-},
-{
-start:"TIME", end:"TIDE",
-answers:["TILE","PILE","PINE","TINE"],
-clues:["Floor piece","Stack of items","Evergreen tree","Fork prong"]
-},
-{
-start:"COLD", end:"WARM",
-answers:["CORD","CARD","WARD","WORD","WORM"],
-clues:["Thick string","Playing card","Hospital section","Spoken unit","Wriggling creature"]
-},
-{
-start:"FIRE", end:"ROOM",
-answers:["FIRM","FORM","FOAM","ROAM"],
-clues:["Solid or steady","Shape or structure","Bubbles on water","Wander freely"]
-},
-{
-start:"MIND", end:"BODY",
-answers:["BIND","BAND","BOND","BONY"],
-clues:["Tie up","Music group","Connection","Very thin"]
-},
-{
-start:"MOON", end:"STAR",
-answers:["SOON","SOAR","SCAR"],
-clues:["In a little while","Fly high","Mark on skin"]
-},
-{
-start:"ROAD", end:"BEAN",
-answers:["GOAD","GOAT","BOAT","BEAT"],
-clues:["Prod forward","Farm animal","Water vessel","Musical rhythm"]
-},
-{
-start:"WIND", end:"BORN",
-answers:["BIND","BAND","BANE","BARE","BORE"],
-clues:["Tie up","Music group","Cause of ruin","Without clothes","Make a hole"]
-},
-{
-start:"FARM", end:"CARE",
-answers:["FIRM","FIRE","TIRE","TARE","BARE"],
-clues:["Solid","Flame","Grow weary","Weight of package only","Without clothes"]
-},
-{
-start:"MINT", end:"BARE",
-answers:["MIND","BIND","BAND","BANE"],
-clues:["Brain","Tie up","Music group","Cause of ruin"]
-},
-{
-start:"BEAN", end:"HEAL",
-answers:["BEAR","BEAT","BELT","BELL","HELL"],
-clues:["Large animal","Rhythm","Waist strap","It rings","Underworld"]
-},
-{
-start:"CAMP", end:"KIND",
-answers:["CAME","CANE","BANE","BAND","BIND"],
-clues:["Arrived","Walking stick","Cause of ruin","Music group","Tie up"]
-},
-{
-start:"GOLD", end:"CAVE",
-answers:["COLD","CORD","CARD","CARE","CAME"],
-clues:["Not warm","Thick string","Playing card","Look after","Arrived"]
-},
-{
-start:"SALT", end:"WINE",
-answers:["SALE","PALE","PILE","PINE"],
-clues:["Store event","Light in color","Stack","Evergreen tree"]
-},
-{
-start:"HAND", end:"FOOD",
-answers:["HARD","WARD","WORD","WOOD"],
-clues:["Not soft","Hospital section","Spoken unit","Tree material"]
-},
-{
-start:"BACK", end:"BOOM",
-answers:["LACK","LOCK","LOOK","BOOK"],
-clues:["Not enough","Door fastener","See with eyes","Something you read"]
-},
-{
-start:"WOOD", end:"BLOW",
-answers:["FOOD","FOOT","BOOT","BLOT"],
-clues:["Something to eat","Part you walk on","Shoe","Ink mark"]
-},
-{
-start:"HEAD", end:"TAIL",
-answers:["HEAL","TEAL","TELL","TALL"],
-clues:["Make better","Blue-green color","Speak","High"]
-},
-{
-start:"BOOK", end:"PAGE",
-answers:["LOOK","LOCK","LACK","PACK","PACE"],
-clues:["See with eyes","Door fastener","Missing","Bundle up","Speed"]
-},
-{
-start:"FISH", end:"BIRD",
-answers:["DISH","DASH","DARK","BARK"],
-clues:["Plate for food","Run quickly","No light","Dog sound"]
-},
-{
-start:"CAMP", end:"FATE",
-answers:["DAMP","DAME","GAME","GATE"],
-clues:["Slightly wet","Lady","Contest","Fence opening"]
-},
-{
-start:"FIRE", end:"SAGE",
-answers:["TIRE","TARE","TALE","SALE"],
-clues:["Grow weary","Package-only weight","Story","Store event"]
-},
-{
-start:"LOOK", end:"PAGE",
-answers:["LOCK","LACK","PACK","PACE"],
-clues:["Door fastener","Missing","Bundle up","Speed"]
-},
-{
-start:"CAME", end:"MORE",
-answers:["CARE","CORE"],
-clues:["Look after","Center part"]
-},
-{
-start:"BARE", end:"MIND",
-answers:["BANE","BAND","BIND"],
-clues:["Cause of ruin","Music group","Tie up"]
-},
-{
-start:"PALE", end:"WINE",
-answers:["PILE","PINE"],
-clues:["Stack","Evergreen tree"]
-},
-{
-start:"HAVE", end:"MIND",
-answers:["CAVE","CANE","BANE","BAND","BIND"],
-clues:["Rock opening","Walking stick","Cause of ruin","Music group","Tie up"]
 }
 ];
 
-/* Daily rotation */
 const launchDate = new Date("2026-04-01T00:00:00");
 const today = new Date();
 today.setHours(0,0,0,0);
@@ -315,7 +171,6 @@ const daysSinceLaunch = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24))
 let currentPuzzleIndex = ((daysSinceLaunch % puzzles.length) + puzzles.length) % puzzles.length;
 let puzzle = puzzles[currentPuzzleIndex];
 
-/* State */
 let currentStep = 0;
 let userAnswers = [];
 let time = 0;
@@ -361,6 +216,7 @@ function buildLadder(){
             div.classList.add("active");
             div.innerHTML = `<input id="input" maxlength="${puzzle.start.length}" autocomplete="off" autofocus />`;
         } else {
+            div.classList.add("placeholder");
             div.textContent = "----";
         }
 
@@ -371,9 +227,7 @@ function buildLadder(){
     if(input){
         input.focus();
         input.addEventListener("keydown", function(e){
-            if(e.key === "Enter"){
-                submitWord();
-            }
+            if(e.key === "Enter") submitWord();
         });
     }
 }
@@ -399,8 +253,24 @@ function submitWord(){
 
     const value = input.value.toUpperCase().trim();
     const correct = puzzle.answers[currentStep];
+    const prevWord = currentStep === 0 ? puzzle.start : puzzle.answers[currentStep - 1];
 
     document.getElementById("message").textContent = "";
+
+    if(value.length !== prevWord.length){
+        document.getElementById("message").textContent = `Use a ${prevWord.length}-letter word`;
+        return;
+    }
+
+    let diff = 0;
+    for(let i = 0; i < value.length; i++){
+        if(value[i] !== prevWord[i]) diff++;
+    }
+
+    if(diff !== 1){
+        document.getElementById("message").textContent = "Change only one letter";
+        return;
+    }
 
     if(value === correct){
         userAnswers.push(value);
@@ -413,7 +283,7 @@ function submitWord(){
             buildClues();
         }
     } else {
-        document.getElementById("message").textContent = "Try again";
+        document.getElementById("message").textContent = "That fits a different clue. Try this row first.";
     }
 }
 
