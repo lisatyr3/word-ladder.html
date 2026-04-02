@@ -3,123 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Ladder Challenge</title>
+<title>Word Ladder</title>
 
 <style>
-body{
-font-family:Arial,Helvetica,sans-serif;
-background:#f3f4f4;
-margin:0;
-padding:16px;
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f5f5f5;
+    margin: 0;
 }
 
-.wrap{
-max-width:1000px;
-margin:auto;
-background:#fff;
-border-radius:20px;
-padding:20px;
-box-shadow:0 3px 10px rgba(0,0,0,.1);
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
 }
 
-h1{text-align:center;color:#2d8a78;}
-
-.goal{text-align:center;font-size:28px;font-weight:bold;margin:10px 0;}
-
-.instructions{text-align:center;color:#666;margin-bottom:20px;}
-
-.stats{text-align:center;margin-bottom:10px;}
-
-.game{
-display:grid;
-grid-template-columns:300px 1fr;
-gap:30px;
+h1 {
+    margin-bottom: 5px;
 }
 
-.ladder{
-border-left:5px solid #777;
-border-right:5px solid #777;
+.subtitle {
+    color: #666;
+    margin-bottom: 15px;
 }
 
-.rung{
-min-height:70px;
-border-top:5px solid #777;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:26px;
+.stats {
+    margin-bottom: 20px;
 }
 
-.rung:last-child{border-bottom:5px solid #777;}
-
-.active{background:#e5f0ee;}
-
-input{
-font-size:24px;
-text-align:center;
-width:120px;
-padding:6px;
-border-radius:8px;
-border:1px solid #ccc;
+.game {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
 }
 
-.clueSpacer{min-height:70px;}
-
-.clue{
-min-height:70px;
-display:flex;
-align-items:center;
-border-top:1px solid #eee;
-font-size:18px;
+.ladder {
+    border: 4px solid #888;
+    width: 220px;
 }
 
-.clue.active{font-weight:bold;color:#2d8a78;}
-
-.keyboard{text-align:center;margin-top:15px;}
-
-.key{
-display:inline-block;
-padding:10px;
-margin:3px;
-background:#ddd;
-border-radius:6px;
-cursor:pointer;
+.step {
+    border-bottom: 2px solid #888;
+    padding: 15px;
+    font-size: 24px;
+    background: #fff;
 }
 
-.message{
-text-align:center;
-font-size:20px;
-font-weight:bold;
-margin-top:10px;
+.step.active {
+    background: #e6f0ee;
 }
 
-button{
-padding:12px 18px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#2d8a78;
-color:white;
-font-size:18px;
-cursor:pointer;
+.clues {
+    text-align: left;
 }
+
+.clue {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+input {
+    font-size: 20px;
+    padding: 5px;
+    width: 120px;
+    text-align: center;
+}
+
+.keyboard {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.success {
+    color: green;
+    font-weight: bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="wrap">
+<div class="container">
 
-<h1>Word Ladder Challenge</h1>
-
-<div class="goal" id="goal"></div>
-
-<div class="instructions">
-Change one letter at a time to reach the final word.
-</div>
+<h1 id="goal"></h1>
+<div class="subtitle">Change one letter at a time to reach the final word</div>
 
 <div class="stats">
-⏱ Time: <span id="timer">0</span>s |
+⏱ Time: <span id="time">0</span>s |
 🔥 Streak: <span id="streak">0</span>
 </div>
 
@@ -127,255 +105,238 @@ Change one letter at a time to reach the final word.
 
 <div class="ladder" id="ladder"></div>
 
-<div>
-<div class="clueSpacer"></div>
-<div id="clues"></div>
-</div>
+<div class="clues" id="clues"></div>
 
 </div>
 
-<div class="keyboard" id="keyboard"></div>
+<div class="keyboard">
+<button onclick="submitWord()">ENTER</button>
+<button onclick="clearInput()">⌫</button>
+</div>
 
-<div class="message" id="message"></div>
+<div id="message"></div>
+
+<button onclick="playAgain()">Play Again</button>
 
 </div>
 
 <script>
 
-/* CLEAN PUZZLES */
+/* =========================
+PUZZLES
+========================= */
 
-const puzzles=[
+const puzzles = [
 
-{start:"MAIN",end:"MEAL",
-answers:["MAIL","MALL","HALL","HELL","HEAL"],
+{
+start:"BOOK", end:"PAGE",
+answers:["LOOK","LOCK","LACK","PACK","PACE"],
 clues:[
-"Letters delivered",
-"Indoor shopping center",
-"Entryway",
-"Underworld",
-"Make better"
-]},
+"See with eyes",
+"Door fastener",
+"Missing",
+"Bundle up",
+"Speed"
+]
+},
 
-{start:"COLD",end:"WARM",
-answers:["CORD","WORD","WARD","WARM","WORM"],
+{
+start:"SHIP", end:"DOCK",
+answers:["SHOP","STOP","STEP","DEEP","DECK"],
+clues:[
+"Store",
+"Halt",
+"Foot movement",
+"Very far down",
+"Boat floor"
+]
+},
+
+{
+start:"COLD", end:"HEAT",
+answers:["CORD","CARD","HARD","HEAD","HEAT"],
 clues:[
 "Thick string",
-"Spoken unit",
-"Hospital section",
-"Opposite of cold",
-"Wriggling creature"
-]},
+"Playing card",
+"Not soft",
+"Top part",
+"High temperature"
+]
+},
 
-{start:"SAND",end:"ROCK",
-answers:["SEND","SEED","REED","RECK","ROCK"],
+{
+start:"MOON", end:"STAR",
+answers:["SOON","SOAR","SCAR","STAR"],
 clues:[
-"Mail something",
-"Plant starter",
-"Tall grass",
-"Care about",
-"Hard stone"
-]},
+"In a little while",
+"Fly high",
+"Mark on skin",
+"Night light"
+]
+},
 
-{start:"TIME",end:"TIDE",
-answers:["TILE","PILE","PINE","TINE","TIDE"],
+{
+start:"MIND", end:"BODY",
+answers:["BIND","BAND","BOND","BONY","BODY"],
 clues:[
-"Floor piece",
-"Stack of items",
-"Evergreen tree",
-"Fork prong",
-"Ocean rise and fall"
-]},
-
-{start:"FISH",end:"BIRD",
-answers:["DISH","DASH","DARK","BARK","BIRD"],
-clues:[
-"Plate for food",
-"Run quickly",
-"No light",
-"Dog sound",
-"Flying animal"
-]},
-
-{start:"HOME",end:"AWAY",
-answers:["COME","CAME","CANE","CAVE","WAVE"],
-clues:[
-"Move toward",
-"Past of come",
-"Walking stick",
-"Rock opening",
-"Ocean movement"
-]},
-
-{start:"TREE",end:"LEAF",
-answers:["FREE","FLEE","FLEA","PLEA","LEAD"],
-clues:[
-"No cost",
-"Run away",
-"Jumping insect",
-"Beg strongly",
-"Heavy metal element"
-]},
-
-{start:"FIRE",end:"SNOW",
-answers:["FIRM","FORM","FOAM","ROAM","ROOM"],
-clues:[
-"Solid or steady",
-"Shape or structure",
-"Bubbles on water",
-"Wander freely",
-"Enclosed space"
-]},
-
-{start:"LOVE",end:"CASH",
-answers:["LOSE","LOST","COST","CAST","CASE"],
-clues:[
-"Fail to keep",
-"No longer found",
-"Price amount",
-"Actors in a show",
-"Container or box"
-]}
+"Tie up",
+"Group",
+"Connection",
+"Thin frame",
+"Physical form"
+]
+}
 
 ];
 
-/* DAILY */
 
-let index=Math.floor(Date.now()/86400000)%puzzles.length;
-let puzzle=puzzles[index];
+/* =========================
+DAILY ROTATION
+========================= */
 
-/* STATE */
+const startDate = new Date("2026-04-01");
+const today = new Date();
+const diff = today - startDate;
+const dayIndex = Math.floor(diff / (1000 * 60 * 60 * 24));
+let index = dayIndex % puzzles.length;
 
-let current=0;
-let solved=[];
-let seconds=0;
+let puzzle = puzzles[index];
 
-/* TIMER */
-setInterval(()=>{
-seconds++;
-document.getElementById("timer").textContent=seconds;
-},1000);
 
-/* STREAK */
-let streak=localStorage.getItem("streak")||0;
-document.getElementById("streak").textContent=streak;
+/* =========================
+STATE
+========================= */
 
-/* DRAW */
+let currentStep = 0;
+let userAnswers = [];
+let time = 0;
+let timer;
+let streak = localStorage.getItem("streak") || 0;
 
-function draw(){
 
-document.getElementById("goal").textContent=puzzle.start+" → "+puzzle.end;
+/* =========================
+INIT
+========================= */
 
-let html="<div class='rung'>"+puzzle.start+"</div>";
+function initGame() {
 
-for(let i=0;i<puzzle.answers.length;i++){
-if(i<solved.length){
-html+="<div class='rung'>"+solved[i]+"</div>";
+document.getElementById("goal").textContent =
+`Puzzle #${dayIndex + 1}: ${puzzle.start} → ${puzzle.end}`;
+
+document.getElementById("streak").textContent = streak;
+
+buildLadder();
+buildClues();
+
+startTimer();
+
 }
-else if(i===current){
-html+="<div class='rung active'><input id='guess'></div>";
-}
-else{
-html+="<div class='rung'>----</div>";
-}
-}
 
-html+="<div class='rung'>"+puzzle.end+"</div>";
+function buildLadder() {
+const ladder = document.getElementById("ladder");
+ladder.innerHTML = "";
 
-document.getElementById("ladder").innerHTML=html;
+const words = [puzzle.start, ...puzzle.answers];
 
-let clues="";
-for(let i=0;i<puzzle.clues.length;i++){
-let c=(i===current)?"clue active":"clue";
-clues+="<div class='"+c+"'>"+puzzle.clues[i]+"</div>";
-}
-document.getElementById("clues").innerHTML=clues;
+words.forEach((word, i) => {
+    const div = document.createElement("div");
+    div.className = "step";
+    if (i === currentStep + 1) div.classList.add("active");
 
-let g=document.getElementById("guess");
-if(g){
-g.focus();
-g.addEventListener("keydown",e=>{
-if(e.key==="Enter") submit();
+    if (i === 0 || i > userAnswers.length) {
+        div.textContent = word;
+    }
+
+    if (i > 0 && i <= userAnswers.length) {
+        div.textContent = userAnswers[i - 1];
+    }
+
+    if (i === currentStep + 1) {
+        div.innerHTML = `<input id="input" maxlength="${puzzle.start.length}" />`;
+    }
+
+    ladder.appendChild(div);
 });
 }
+
+function buildClues() {
+const cluesDiv = document.getElementById("clues");
+cluesDiv.innerHTML = "";
+
+puzzle.clues.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "clue";
+    div.textContent = c;
+    cluesDiv.appendChild(div);
+});
 }
 
-/* SUBMIT */
+function submitWord() {
 
-function submit(){
+const input = document.getElementById("input");
+if (!input) return;
 
-let g=document.getElementById("guess");
-let word=g.value.toUpperCase().trim();
+const value = input.value.toUpperCase();
 
-if(word===puzzle.answers[current]){
+const correct = puzzle.answers[currentStep];
 
-document.getElementById("message").textContent="";
+if (value === correct) {
 
-solved.push(word);
-current++;
+    userAnswers.push(value);
+    currentStep++;
 
-draw();
+    if (currentStep === puzzle.answers.length) {
+        winGame();
+    }
 
-if(current===puzzle.answers.length){
+    buildLadder();
+
+} else {
+    document.getElementById("message").textContent = "Try again";
+}
+
+}
+
+function clearInput() {
+const input = document.getElementById("input");
+if (input) input.value = "";
+}
+
+function winGame() {
+
+clearInterval(timer);
 
 streak++;
-localStorage.setItem("streak",streak);
-document.getElementById("streak").textContent=streak;
+localStorage.setItem("streak", streak);
 
-document.getElementById("message").innerHTML=`
-🎉 You solved it!<br>
-<button onclick="nextPuzzle()">Play Another Puzzle</button>
-`;
-
-return;
-}
-
-}else{
-document.getElementById("message").textContent="Try again";
-}
+document.getElementById("message").innerHTML =
+"<div class='success'>✔ You got it!</div>";
 
 }
 
-/* NEXT */
-
-function nextPuzzle(){
-
-index=Math.floor(Math.random()*puzzles.length);
-puzzle=puzzles[index];
-
-current=0;
-solved=[];
-seconds=0;
-
-document.getElementById("message").textContent="";
-
-draw();
+function startTimer() {
+timer = setInterval(() => {
+    time++;
+    document.getElementById("time").textContent = time;
+}, 1000);
 }
 
-/* KEYBOARD */
+function playAgain() {
 
-function keyboard(){
-let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-let html="";
-for(let l of letters){
-html+="<span class='key' onclick='add(\""+l+"\")'>"+l+"</span>";
-}
-html+="<span class='key' onclick='back()'>⌫</span>";
-html+="<span class='key' onclick='submit()'>ENTER</span>";
-document.getElementById("keyboard").innerHTML=html;
-}
+index = Math.floor(Math.random() * puzzles.length);
+puzzle = puzzles[index];
 
-function add(l){
-let g=document.getElementById("guess");
-if(g && g.value.length<4) g.value+=l;
+currentStep = 0;
+userAnswers = [];
+time = 0;
+
+clearInterval(timer);
+
+initGame();
+
 }
 
-function back(){
-let g=document.getElementById("guess");
-if(g) g.value=g.value.slice(0,-1);
-}
-
-keyboard();
-draw();
+initGame();
 
 </script>
 
